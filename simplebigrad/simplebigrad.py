@@ -7,7 +7,7 @@ class Real:
     """A wrapped real number"""
     __wrapped_type = float
     verbose = False
-    def __init__(self, value:__wrapped_type, __parents=[], __op=None, __tape=None) -> None:
+    def __init__(self, value:__wrapped_type, __parents=[], __op=None) -> None:
         self.value = value
         self.__parents = __parents
         self.__childs = []
@@ -176,6 +176,7 @@ class Real:
                     str([p.value.__round__(3) for p in node.__parents]),
                     str(node.grad.__round__(3)))
                     )
+
     def backward(self):
         if self.verbose:
             print("Reverse Adjoint Trace:")
@@ -200,6 +201,7 @@ class Real:
                     parent.grad = Δoutput_Δnode * Δnode_Δparent
                 else:
                     parent.grad += Δoutput_Δnode * Δnode_Δparent
+
         self.grad = 1
         ordered = reversed(_topological_order())
         for node in ordered:
