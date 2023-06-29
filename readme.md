@@ -1,4 +1,4 @@
-# Mini Bidirectional Autograd
+# Simple Bidirectional Autograd
 This repository provides an autograd-like implementation of a bidirectional automatic differentiation.
 As the autograd, we use the function wrappers for generating the computation graph.
 Also, the tape is used in both the forward- and the reverse-mode automatic differentiation.
