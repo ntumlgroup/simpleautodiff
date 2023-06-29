@@ -145,7 +145,8 @@ class Real:
         return
 
     def forward(self):
-        print("Forward Tangent Trace:")
+        if self.verbose:
+            print("Forward Tangent Trace:")
         def _topological_order():
             def _add_childs(node):
                 if node not in visited:
