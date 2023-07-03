@@ -53,7 +53,7 @@ Then, the different passes and traces are introduced.
 The chain rule is a formula that expresses the derivative of the composition of two differentiable function.
 It may also be expressed in Leibniz's notation. If a variable $y$ depends on the variable $v$, which itself depends on the variable $x$. In this case, the chain rule is expressed as 
 
-$\frac{dy}{dx}=\frac{dy}{dv}\dot\frac{dv}{dx}$.
+$\frac{dy}{dx} = \frac{dy}{dv} \dot \frac{dv}{dx} $.
 
 There are two types of operations used: binary operations, such as addition and multiplication, and unary operations, such negation and absolute value.
 An equation constructed by variables and operations.
@@ -65,7 +65,7 @@ $Tree\ Graph\ of\ operations$
 
 For calculating a derivative $\frac{dy}{dx_1}$ with $n$ intermediate varaibles $v_i$,
 
-$\frac{dy}{dx_1}=\frac{dy}{dv_1}\dot\frac{dv_1}{dx_1}+\frac{dy}{dv_2}\dot\frac{dv_2}{dx_1}+\dots+\frac{dy}{dv_n}\dot\frac{dv_n}{dx_1}$
+$\frac{dy}{dx_1} = \frac{dy}{dv_1}\dot \frac{dv_1}{dx_1}+ \frac{dy}{dv_2}\dot \frac{dv_2}{dx_1}+\dots+ \frac{dy}{dv_n}\dot \frac{dv_n}{dx_1}$
 
 However, some of the $\frac{dv_1}{dx_1}$ may be zero since $v_i$ and $x_1$ may be independent.
 Hence, in every node, we store its parents and childs for excluding redundant values in the summation.
@@ -79,7 +79,7 @@ Hence, take $v=sin(x)$ as example, the implementation generates a variable $v$ s
     node.__parent = [x]
     node.__op = sin(x)
 ```
-The member *grad_wrt(x)* is dictionary storing intermediate gradients with respect to $x$.
+The member *grad_wrt(x)* is a dictionary storing intermediate gradients with respect to $x$.
 
 In the case of the binary operations $v=f(x_1,x_2)$ two intermediate derivatives $\frac{dv}{dx_1}, \frac{dv}{dx_2}$ can be obtained.
 Hence, for every intermediate variable, we store the intermediate derivatives for the calculation.
