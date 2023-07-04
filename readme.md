@@ -112,9 +112,15 @@ Eventually, the `fnode` is returned for the following operations.
 
 In the case of the binary operations $y=f(x_1,x_2)$ two intermediate derivatives $\dfrac{dy}{dx_1}, \dfrac{dy}{dx_2}$ can be obtained.
 Hence, for every intermediate variable, we store the intermediate derivatives for the calculation.
-Take $y=x_1\times x_2$ as example, the implementation generates a variable $y$ storing informations:
+Take $y=\dfrac{x_1}{x_2}$ as example, the implementation, same, generates a foward node (`fnode`) to store the information of the operation:
 
-https://github.com/Fangop/simplebigrad/blob/2e043bcfb686ad7722ea1bcc299cabf6c758c87d/simplebigrad/simplebigrad.py#L63-L71
+https://github.com/Fangop/simplebigrad/blob/2e043bcfb686ad7722ea1bcc299cabf6c758c87d/simplebigrad/simplebigrad.py#L76-L84
+
+
+Since we implement the multiplication by operator overriding, the parameters `self` and `other` are the $x_1$ and the $x_2$ in the formula, respectively.
+Notice that field member `__parents` is a list for recording the order since not all the binary operations are commutative.
+Another thing worth noting is that, for binary operations, there are two intermediate gradients with respect to their two parents (inputs).
+Hence, $\dfrac{d(x_1/x_2)}{dx_1}=\dfrac{1}{x_2}$ and $\dfrac{d(x_1/x_2)}{dx_2}=-\dfrac{x_1}{(x_2)^2}$ are stored.
 
 ### Forward Primal Trace:
 ### Forward Tagent Trace:
