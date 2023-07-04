@@ -10,7 +10,7 @@ class Real:
     def __init__(self, value:__wrapped_type, __parents=[], __op=None) -> None:
         self.value = value
         self.__parents = __parents
-        self.__childs = []
+        self.__children = []
         self.__op = __op
         self.grad = None
         self.grad_wrt = {}
@@ -33,8 +33,8 @@ class Real:
         fnode = Real(self.value+other.value, [self,other], self.__wrapped_type.__add__)
         fnode.grad_wrt[self] = 1
         fnode.grad_wrt[other] = 1
-        self.__childs.append(fnode)
-        other.__childs.append(fnode)
+        self.__children.append(fnode)
+        other.__children.append(fnode)
         return fnode
 
     def __radd__(self, other)->__wrapped_type:
@@ -46,8 +46,8 @@ class Real:
         fnode = Real(self.value-other.value, [self,other], self.__wrapped_type.__sub__)
         fnode.grad_wrt[self] = 1
         fnode.grad_wrt[other] = -1
-        self.__childs.append(fnode)
-        other.__childs.append(fnode)
+        self.__children.append(fnode)
+        other.__children.append(fnode)
         return fnode
 
     def __rsub__(self, other)->__wrapped_type:
@@ -56,8 +56,8 @@ class Real:
         fnode = Real(other.value-self.value, [self,other], self.__wrapped_type.__sub__)
         fnode.grad_wrt[self] = 1
         fnode.grad_wrt[other] = -1
-        self.__childs.append(fnode)
-        other.__childs.append(fnode)
+        self.__children.append(fnode)
+        other.__children.append(fnode)
         return fnode
     
     def __mul__(self, other)->__wrapped_type:
@@ -66,8 +66,8 @@ class Real:
         fnode = Real(self.value * other.value, [self, other], self.__wrapped_type.__mul__)
         fnode.grad_wrt[self] = other.value
         fnode.grad_wrt[other] = self.value
-        self.__childs.append(fnode)
-        other.__childs.append(fnode)
+        self.__children.append(fnode)
+        other.__children.append(fnode)
         return fnode
 
     def __rmul__(self, other):
@@ -79,8 +79,8 @@ class Real:
         fnode = Real(self.value / other.value, [self, other], self.__wrapped_type.__truediv__)
         fnode.grad_wrt[self] = 1 / other.value
         fnode.grad_wrt[other] = -self.value / other.value**2
-        self.__childs.append(fnode)
-        other.__childs.append(fnode)
+        self.__children.append(fnode)
+        other.__children.append(fnode)
         return fnode
     
     def __rtruediv__(self, other):
@@ -89,8 +89,8 @@ class Real:
         fnode = Real(other.value/self.value, [self, other], self.__wrapped_type.__truediv__)
         fnode.grad_wrt[self] = -other.value / self.value**2
         fnode.grad_wrt[other] = 1 / self.value
-        self.__childs.append(fnode)
-        other.__childs.append(fnode)
+        self.__children.append(fnode)
+        other.__children.append(fnode)
         return fnode
   
     def __pow__(self, other):
@@ -99,16 +99,16 @@ class Real:
         fnode = Real(self.value ** other.value, [self,other], self.__wrapped_type.__pow__)
         fnode.grad_wrt[self] = other.value * self.value**(other.value - 1)
         fnode.grad_wrt[other] = (self.value**other.value)*math_log(self.value)
-        self.__childs.append(fnode)
-        other.__childs.append(fnode)
+        self.__children.append(fnode)
+        other.__children.append(fnode)
         return fnode
 
     def __rpow__(self,other):
         fnode = self.__pow__(other)
         fnode.grad_wrt[self] = self.value * other.value**(self.value - 1)
         fnode.grad_wrt[other] = (other.value**self.value)*math_log(other.value)
-        self.__childs.append(fnode)
-        other.__childs.append(fnode)
+        self.__children.append(fnode)
+        other.__children.append(fnode)
         return fnode
     
     def __neg__(self):
@@ -124,8 +124,8 @@ class Real:
         fnode = Real(math_log(x.value,base.value), [x,base], math_log)
         fnode.grad_wrt[x] = 1/(x.value*math_log(base.value))
         fnode.grad_wrt[base] = -math_log(x.value)/(base.value*math_log(base.value**2))
-        x.__childs.append(fnode)
-        base.__childs.append(fnode)
+        x.__children.append(fnode)
+        base.__children.append(fnode)
         return fnode
 
     def sin(x):
@@ -133,7 +133,7 @@ class Real:
             x = Real(x)
         fnode = Real(math_sin(x.value), [x], math_sin)
         fnode.grad_wrt[x] = math_cos(x.value)
-        x.__childs.append(fnode)
+        x.__children.append(fnode)
         return fnode
 
     def cos(x):
@@ -141,26 +141,26 @@ class Real:
             x = Real(x)
         fnode = Real(math_cos(x.value), [x], math_cos)
         fnode.grad_wrt[x] = -math_sin(x.value)
-        x.__childs.append(fnode)
+        x.__children.append(fnode)
         return fnode
 
     def forward(self):
         if self.verbose:
             print("Forward Tangent Trace:")
         def _topological_order():
-            def _add_childs(node):
+            def _add_children(node):
                 if node not in visited:
                     visited.add(node)
-                    for child in node.__childs:
-                        _add_childs(child)
+                    for child in node.__children:
+                        _add_children(child)
                     ordered.append(node)
 
             ordered, visited = [], set()
-            _add_childs(self)
+            _add_children(self)
             return ordered
 
-        def _compute_grad_of_childs(node):
-            for child in node.__childs:
+        def _compute_grad_of_children(node):
+            for child in node.__children:
                 Δoutput_Δnode = node.grad 
                 Δchild_Δnode = child.grad_wrt[node]
                 if child.grad == None:
@@ -170,7 +170,7 @@ class Real:
         self.grad = 1
         ordered = reversed(_topological_order())
         for node in ordered:
-            _compute_grad_of_childs(node)
+            _compute_grad_of_children(node)
             if self.verbose == True:
                 print('val:{:<10}|par:{:<30}|grad:{:<30}'.format(
                     str(node.value.__round__(3)),
