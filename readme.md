@@ -90,7 +90,7 @@ Since the intermediate derivative is used, it is also stored in the nodes.
 In this repository, we implement a wrapped Real value object for performing AutoDiff.
 The initialization of a Real instance:
 
-https://github.com/Fangop/simplebigrad/blob/3af96345962faac9bf9a11ef0cb0427528e24991/simplebigrad/simplebigrad.py#L10-L16
+https://github.com/Fangop/simplebigrad/blob/2e043bcfb686ad7722ea1bcc299cabf6c758c87d/simplebigrad/simplebigrad.py#L10-L16
 
 Each field member stores different information mentioned above.
 Field member `value` is for the numerical outcome of the operation.
@@ -103,7 +103,7 @@ Member `grad_wrt` is a dictionary for the intermediate gradients with respect to
 For an unary operation $y=f(x)$, one intermediate derivative $\dfrac{dy}{dx}$ may be calculated and stored.
 Hence, take $y=sin(x)$ as example, the implementation generates a foward node (`fnode`) to store the information of the operation:
 
-https://github.com/Fangop/simplebigrad/blob/3af96345962faac9bf9a11ef0cb0427528e24991/simplebigrad/simplebigrad.py#L131-L137
+https://github.com/Fangop/simplebigrad/blob/2e043bcfb686ad7722ea1bcc299cabf6c758c87d/simplebigrad/simplebigrad.py#L131-L137
 
 We may see that the value of $sin(x)$, the parents list of $[x]$, the operations `math_sin` are the arguements passed for the initialization of the `fnode`.
 The intermediate gradient $\dfrac{dsin(x)}{dx}=cos(x)$ is stored in the member field `grad_wrt[x]`.
@@ -113,8 +113,8 @@ Eventually, the `fnode` is returned for the following operations.
 In the case of the binary operations $y=f(x_1,x_2)$ two intermediate derivatives $\dfrac{dy}{dx_1}, \dfrac{dy}{dx_2}$ can be obtained.
 Hence, for every intermediate variable, we store the intermediate derivatives for the calculation.
 Take $y=x_1\times x_2$ as example, the implementation generates a variable $y$ storing informations:
-```
-```
+
+https://github.com/Fangop/simplebigrad/blob/2e043bcfb686ad7722ea1bcc299cabf6c758c87d/simplebigrad/simplebigrad.py#L63-L71
 
 ### Forward Primal Trace:
 ### Forward Tagent Trace:
