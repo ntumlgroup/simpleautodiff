@@ -87,11 +87,26 @@ Since $v_i\in Parent(y)$, the intermediate derivatives $\dfrac{dy}{dv_i}$ can be
 Also, $\dfrac{dv_i}{dx}$ can be obtained by recursively solving $\dfrac{dy}{dx}$ with $y=v_i$.
 
 Since the intermediate derivative is used, it is also stored in the nodes.
+In this repository, we implement a wrapped Real value object for performing AutoDiff.
+The initialization of a Real instance:
+
+https://github.com/Fangop/simplebigrad/blob/3af96345962faac9bf9a11ef0cb0427528e24991/simplebigrad/simplebigrad.py#L10-L16
+
+Each field member stores different information mentioned above.
+Field member `value` is for the numerical outcome of the operation.
+Filed members `__parents` and `__op` record the input instances and the operation, these two variables are called recipe in literature.
+Member `__childs` is initialized as an empty list for the track of the following operations.
+In most of the implementations, `__childs` is redundant since forward tangent trace is dominated by backward adjoint trace in most of the practical use.
+Last, members `grad` and `grad_wrt` record the gradients.
+Member `grad_wrt` is a dictionary for the intermediate gradients with respect to the parents of the node.
+
 For an unary operation $y=f(x)$, one intermediate derivative $\dfrac{dy}{dx}$ may be calculated and stored.
-Hence, take $y=sin(x)$ as example, the implementation generates a variable $y$ storing informations:
-```
-```
-The member *grad_wrt(x)* is a dictionary storing intermediate gradients with respect to $x$.
+Hence, take $y=sin(x)$ as example, the implementation generates a foward node (`fnode`) to store the information of the operation:
+
+https://github.com/Fangop/simplebigrad/blob/3af96345962faac9bf9a11ef0cb0427528e24991/simplebigrad/simplebigrad.py#L131-L137
+
+
+*grad_wrt(x)* is a dictionary storing intermediate gradients with respect to $x$.
 
 In the case of the binary operations $y=f(x_1,x_2)$ two intermediate derivatives $\dfrac{dy}{dx_1}, \dfrac{dy}{dx_2}$ can be obtained.
 Hence, for every intermediate variable, we store the intermediate derivatives for the calculation.
