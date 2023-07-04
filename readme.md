@@ -76,12 +76,12 @@ Hence, by applying these overridden operators, the expression tree is constructe
 ### Chain Rule and the Computation Graph:
 The chain rule is a formula that expresses the derivative of the composition of two differentiable function.
 It may also be expressed in Leibniz's notation. If a variable $y$ depends on the variable $v$, which itself depends on the variable $x$. In this case, the chain rule is expressed as 
-$\dfrac{dy}{dx}=\dfrac{dy}{dv}\dfrac{dv}{dx}$.
+$$\dfrac{dy}{dx}=\dfrac{dy}{dv}\dfrac{dv}{dx}$$.
 
 Assume that $V$ is the set with all the nodes $v_i$ of an expression tree.
 For calculating a derivative $\dfrac{dy}{dx}$ with such an expression tree, we may use
 
-$\dfrac{dy}{dx}=\sum_{\forall v_i\in Parent(y) }\dfrac{dy}{dv_i}\dfrac{dv_i}{dx}$
+$$\dfrac{dy}{dx}=\sum_{\forall v_i\in Parent(y) }\dfrac{dy}{dv_i}\dfrac{dv_i}{dx}$$.
 
 Since $v_i\in Parent(y)$, the intermediate derivatives $\dfrac{dy}{dv_i}$ can be obtained by inspecting their operations.
 Also, $\dfrac{dv_i}{dx}$ can be obtained by recursively solving $\dfrac{dy}{dx}$ with $y=v_i$.
@@ -104,7 +104,6 @@ For an unary operation $y=f(x)$, one intermediate derivative $\dfrac{dy}{dx}$ ma
 Hence, take $y=sin(x)$ as example, the implementation generates a foward node (`fnode`) to store the information of the operation:
 
 https://github.com/Fangop/simplebigrad/blob/3af96345962faac9bf9a11ef0cb0427528e24991/simplebigrad/simplebigrad.py#L131-L137
-
 
 *grad_wrt(x)* is a dictionary storing intermediate gradients with respect to $x$.
 
