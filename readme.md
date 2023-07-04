@@ -95,8 +95,8 @@ https://github.com/Fangop/simplebigrad/blob/3af96345962faac9bf9a11ef0cb0427528e2
 Each field member stores different information mentioned above.
 Field member `value` is for the numerical outcome of the operation.
 Filed members `__parents` and `__op` record the input instances and the operation, these two variables are called recipe in literature.
-Member `__childs` is initialized as an empty list for the track of the following operations.
-In most of the implementations, `__childs` is redundant since forward tangent trace is dominated by backward adjoint trace in most of the practical use.
+Member `__children` is initialized as an empty list for the track of the following operations.
+In most of the implementations, `__children` is redundant since forward tangent trace is dominated by backward adjoint trace in most of the practical use.
 Last, members `grad` and `grad_wrt` record the gradients.
 Member `grad_wrt` is a dictionary for the intermediate gradients with respect to the parents of the node.
 
