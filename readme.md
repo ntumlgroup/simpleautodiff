@@ -105,7 +105,10 @@ Hence, take $y=sin(x)$ as example, the implementation generates a foward node (`
 
 https://github.com/Fangop/simplebigrad/blob/3af96345962faac9bf9a11ef0cb0427528e24991/simplebigrad/simplebigrad.py#L131-L137
 
-*grad_wrt(x)* is a dictionary storing intermediate gradients with respect to $x$.
+We may see that the value of $sin(x)$, the parents list of $[x]$, the operations `math_sin` are the arguements passed for the initialization of the `fnode`.
+The intermediate gradient $\dfrac{dsin(x)}{dx}=cos(x)$ is stored in the member field `grad_wrt[x]`.
+Then, the parent $x$ also keep track of its child `fnode`.
+Eventually, the `fnode` is returned for the following operations.
 
 In the case of the binary operations $y=f(x_1,x_2)$ two intermediate derivatives $\dfrac{dy}{dx_1}, \dfrac{dy}{dx_2}$ can be obtained.
 Hence, for every intermediate variable, we store the intermediate derivatives for the calculation.
