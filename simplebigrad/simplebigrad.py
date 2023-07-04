@@ -142,7 +142,7 @@ class Real:
         fnode = Real(math_cos(x.value), [x], math_cos)
         fnode.grad_wrt[x] = -math_sin(x.value)
         x.__childs.append(fnode)
-        return
+        return fnode
 
     def forward(self):
         if self.verbose:
