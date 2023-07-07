@@ -27,7 +27,7 @@ class WrappedFloat:
         else:
             return f'WrappedFloat(value={self.value:.2f}, grad=(Unsolved)'
 
-    def __add__(self,other)->__wrapped_type:
+    def __add__(self,other):
         if not WrappedFloat.__instancecheck__(other):
             other = WrappedFloat(other)
         fnode = WrappedFloat(self.value+other.value, [self,other], self.__wrapped_type.__add__)
@@ -37,10 +37,10 @@ class WrappedFloat:
         other.__children.append(fnode)
         return fnode
 
-    def __radd__(self, other)->__wrapped_type:
+    def __radd__(self, other):
         return self.__add__(other)
 
-    def __sub__(self,other)->__wrapped_type:
+    def __sub__(self,other):
         if not WrappedFloat.__instancecheck__(other):
             other = WrappedFloat(other)
         fnode = WrappedFloat(self.value-other.value, [self,other], self.__wrapped_type.__sub__)
@@ -50,7 +50,7 @@ class WrappedFloat:
         other.__children.append(fnode)
         return fnode
 
-    def __rsub__(self, other)->__wrapped_type:
+    def __rsub__(self, other):
         if not WrappedFloat.__instancecheck__(other):
             other = WrappedFloat(other)
         fnode = WrappedFloat(other.value-self.value, [self,other], self.__wrapped_type.__sub__)
@@ -60,7 +60,7 @@ class WrappedFloat:
         other.__children.append(fnode)
         return fnode
     
-    def __mul__(self, other)->__wrapped_type:
+    def __mul__(self, other):
         if not WrappedFloat.__instancecheck__(other):
             other = WrappedFloat(other)
         fnode = WrappedFloat(self.value * other.value, [self, other], self.__wrapped_type.__mul__)
