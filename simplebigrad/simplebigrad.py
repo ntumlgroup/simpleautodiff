@@ -27,100 +27,106 @@ class WrappedFloat:
         else:
             return f'WrappedFloat(value={self.value:.2f}, grad=(Unsolved)'
 
-    def __add__(self,other):
-        if not WrappedFloat.__instancecheck__(other):
-            other = WrappedFloat(other)
-        fnode = WrappedFloat(self.value+other.value, [self,other], self.__wrapped_type.__add__)
-        fnode.grad_wrt[self] = 1
-        fnode.grad_wrt[other] = 1
-        self.__children.append(fnode)
-        other.__children.append(fnode)
+    def add(x1,x2):
+        if not WrappedFloat.__instancecheck__(x1):
+            x1 = WrappedFloat(x1)
+        if not WrappedFloat.__instancecheck__(x2):
+            x2 = WrappedFloat(x2)
+        fnode = WrappedFloat(x1.value+x2.value, [x1,x2], WrappedFloat.__wrapped_type.__add__)
+        fnode.grad_wrt[x1] = 1
+        fnode.grad_wrt[x2] = 1
+        x1.__children.append(fnode)
+        x2.__children.append(fnode)
         return fnode
+
+    def sub(x1,x2):
+        if not WrappedFloat.__instancecheck__(x1):
+            x1 = WrappedFloat(x1)
+        if not WrappedFloat.__instancecheck__(x2):
+            x2 = WrappedFloat(x2)
+        fnode = WrappedFloat(x1.value-x2.value, [x1,x2], WrappedFloat.__wrapped_type.__sub__)
+        fnode.grad_wrt[x1] = 1
+        fnode.grad_wrt[x2] = -1
+        x1.__children.append(fnode)
+        x2.__children.append(fnode)
+        return fnode
+
+    def mul(x1,x2):
+        if not WrappedFloat.__instancecheck__(x1):
+            x1 = WrappedFloat(x1)
+        if not WrappedFloat.__instancecheck__(x2):
+            x2 = WrappedFloat(x2)
+        fnode = WrappedFloat(x1.value * x2.value, [x1, x2], WrappedFloat.__wrapped_type.__mul__)
+        fnode.grad_wrt[x1] = x2.value
+        fnode.grad_wrt[x2] = x1.value
+        x1.__children.append(fnode)
+        x2.__children.append(fnode)
+        return fnode
+
+    def pow(x1, x2):
+        if not WrappedFloat.__instancecheck__(x1):
+            x1 = WrappedFloat(x1)
+        if not WrappedFloat.__instancecheck__(x2):
+            x2 = WrappedFloat(x2)
+        fnode = WrappedFloat(x1.value ** x2.value, [x1,x2], WrappedFloat.__wrapped_type.__pow__)
+        fnode.grad_wrt[x1] = x2.value * x1.value**(x2.value - 1)
+        fnode.grad_wrt[x2] = (x1.value**x2.value)*math_log(x1.value)
+        x1.__children.append(fnode)
+        x2.__children.append(fnode)
+        return fnode
+
+    def div(x1,x2):
+        if not WrappedFloat.__instancecheck__(x1):
+            x1 = WrappedFloat(x1)
+        if not WrappedFloat.__instancecheck__(x2):
+            x2 = WrappedFloat(x2)
+        fnode = WrappedFloat(x1.value / x2.value, [x1,x2], WrappedFloat.__wrapped_type.__truediv__)
+        fnode.grad_wrt[x1] = 1 / x1.value
+        fnode.grad_wrt[x2] = -x1.value / x2.value**2
+        x1.__children.append(fnode)
+        x2.__children.append(fnode)
+        return fnode
+
+    def __add__(self,other):
+        return self.add(other)
 
     def __radd__(self, other):
-        return self.__add__(other)
+        return self.add(other)
 
     def __sub__(self,other):
-        if not WrappedFloat.__instancecheck__(other):
-            other = WrappedFloat(other)
-        fnode = WrappedFloat(self.value-other.value, [self,other], self.__wrapped_type.__sub__)
-        fnode.grad_wrt[self] = 1
-        fnode.grad_wrt[other] = -1
-        self.__children.append(fnode)
-        other.__children.append(fnode)
-        return fnode
+        return WrappedFloat.sub(self,other)
 
     def __rsub__(self, other):
-        if not WrappedFloat.__instancecheck__(other):
-            other = WrappedFloat(other)
-        fnode = WrappedFloat(other.value-self.value, [self,other], self.__wrapped_type.__sub__)
-        fnode.grad_wrt[self] = 1
-        fnode.grad_wrt[other] = -1
-        self.__children.append(fnode)
-        other.__children.append(fnode)
-        return fnode
-    
+        return WrappedFloat.sub(other,self)
+
     def __mul__(self, other):
-        if not WrappedFloat.__instancecheck__(other):
-            other = WrappedFloat(other)
-        fnode = WrappedFloat(self.value * other.value, [self, other], self.__wrapped_type.__mul__)
-        fnode.grad_wrt[self] = other.value
-        fnode.grad_wrt[other] = self.value
-        self.__children.append(fnode)
-        other.__children.append(fnode)
-        return fnode
+        return self.mul(other)
 
     def __rmul__(self, other):
-        return self.__mul__(other)
+        return self.mul(other)
 
     def __truediv__(self, other):
-        if not WrappedFloat.__instancecheck__(other):
-            other = WrappedFloat(other)
-        fnode = WrappedFloat(self.value / other.value, [self, other], self.__wrapped_type.__truediv__)
-        fnode.grad_wrt[self] = 1 / other.value
-        fnode.grad_wrt[other] = -self.value / other.value**2
-        self.__children.append(fnode)
-        other.__children.append(fnode)
-        return fnode
+        return WrappedFloat.div(self,other)
     
     def __rtruediv__(self, other):
-        if not WrappedFloat.__instancecheck__(other):
-            other = WrappedFloat(other)
-        fnode = WrappedFloat(other.value/self.value, [self, other], self.__wrapped_type.__truediv__)
-        fnode.grad_wrt[self] = -other.value / self.value**2
-        fnode.grad_wrt[other] = 1 / self.value
-        self.__children.append(fnode)
-        other.__children.append(fnode)
-        return fnode
+        return WrappedFloat.div(other,self)
   
     def __pow__(self, other):
-        if not WrappedFloat.__instancecheck__(other):
-            other = WrappedFloat(other)
-        fnode = WrappedFloat(self.value ** other.value, [self,other], self.__wrapped_type.__pow__)
-        fnode.grad_wrt[self] = other.value * self.value**(other.value - 1)
-        fnode.grad_wrt[other] = (self.value**other.value)*math_log(self.value)
-        self.__children.append(fnode)
-        other.__children.append(fnode)
-        return fnode
+        return WrappedFloat.pow(self,other)
 
     def __rpow__(self,other):
-        fnode = self.__pow__(other)
-        fnode.grad_wrt[self] = self.value * other.value**(self.value - 1)
-        fnode.grad_wrt[other] = (other.value**self.value)*math_log(other.value)
-        self.__children.append(fnode)
-        other.__children.append(fnode)
-        return fnode
-    
+        return WrappedFloat.pow(other,self)
+
     def __neg__(self):
-        return self.__mul__(-1)
+        return self.mul(-1)
 
     def log(x ,base=None):
+        if not WrappedFloat.__instancecheck__(x):
+            x = WrappedFloat(x)
         if base == None:
             base = WrappedFloat(math_exp(1))
         elif not WrappedFloat.__instancecheck__(base):
             base = WrappedFloat(base)
-        if not WrappedFloat.__instancecheck__(x):
-            x = WrappedFloat(x)
         fnode = WrappedFloat(math_log(x.value,base.value), [x,base], math_log)
         fnode.grad_wrt[x] = 1/(x.value*math_log(base.value))
         fnode.grad_wrt[base] = -math_log(x.value)/(base.value*math_log(base.value**2))
