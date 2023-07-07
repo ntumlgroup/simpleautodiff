@@ -3,8 +3,8 @@ from math import exp as math_exp
 from math import sin as math_sin
 from math import cos as math_cos
 
-class Real:
-    """A wrapped real number"""
+class WrappedFloat:
+    """A wrapped floating-point"""
     __wrapped_type = float
     verbose = False
     def __init__(self, value:__wrapped_type, __parents=[], __op=None) -> None:
@@ -23,14 +23,14 @@ class Real:
     
     def __repr__(self) -> str:
         if self.grad:
-            return f'Real(value={self.value:.2f}, grad={self.grad:.3f})'
+            return f'WrappedFloat(value={self.value:.2f}, grad={self.grad:.3f})'
         else:
-            return f'Real(value={self.value:.2f}, grad=(Unsolved)'
-    
+            return f'WrappedFloat(value={self.value:.2f}, grad=(Unsolved)'
+
     def __add__(self,other)->__wrapped_type:
-        if not Real.__instancecheck__(other):
-            other = Real(other)
-        fnode = Real(self.value+other.value, [self,other], self.__wrapped_type.__add__)
+        if not WrappedFloat.__instancecheck__(other):
+            other = WrappedFloat(other)
+        fnode = WrappedFloat(self.value+other.value, [self,other], self.__wrapped_type.__add__)
         fnode.grad_wrt[self] = 1
         fnode.grad_wrt[other] = 1
         self.__children.append(fnode)
@@ -41,9 +41,9 @@ class Real:
         return self.__add__(other)
 
     def __sub__(self,other)->__wrapped_type:
-        if not Real.__instancecheck__(other):
-            other = Real(other)
-        fnode = Real(self.value-other.value, [self,other], self.__wrapped_type.__sub__)
+        if not WrappedFloat.__instancecheck__(other):
+            other = WrappedFloat(other)
+        fnode = WrappedFloat(self.value-other.value, [self,other], self.__wrapped_type.__sub__)
         fnode.grad_wrt[self] = 1
         fnode.grad_wrt[other] = -1
         self.__children.append(fnode)
@@ -51,9 +51,9 @@ class Real:
         return fnode
 
     def __rsub__(self, other)->__wrapped_type:
-        if not Real.__instancecheck__(other):
-            other = Real(other)
-        fnode = Real(other.value-self.value, [self,other], self.__wrapped_type.__sub__)
+        if not WrappedFloat.__instancecheck__(other):
+            other = WrappedFloat(other)
+        fnode = WrappedFloat(other.value-self.value, [self,other], self.__wrapped_type.__sub__)
         fnode.grad_wrt[self] = 1
         fnode.grad_wrt[other] = -1
         self.__children.append(fnode)
@@ -61,9 +61,9 @@ class Real:
         return fnode
     
     def __mul__(self, other)->__wrapped_type:
-        if not Real.__instancecheck__(other):
-            other = Real(other)
-        fnode = Real(self.value * other.value, [self, other], self.__wrapped_type.__mul__)
+        if not WrappedFloat.__instancecheck__(other):
+            other = WrappedFloat(other)
+        fnode = WrappedFloat(self.value * other.value, [self, other], self.__wrapped_type.__mul__)
         fnode.grad_wrt[self] = other.value
         fnode.grad_wrt[other] = self.value
         self.__children.append(fnode)
@@ -74,9 +74,9 @@ class Real:
         return self.__mul__(other)
 
     def __truediv__(self, other):
-        if not Real.__instancecheck__(other):
-            other = Real(other)
-        fnode = Real(self.value / other.value, [self, other], self.__wrapped_type.__truediv__)
+        if not WrappedFloat.__instancecheck__(other):
+            other = WrappedFloat(other)
+        fnode = WrappedFloat(self.value / other.value, [self, other], self.__wrapped_type.__truediv__)
         fnode.grad_wrt[self] = 1 / other.value
         fnode.grad_wrt[other] = -self.value / other.value**2
         self.__children.append(fnode)
@@ -84,9 +84,9 @@ class Real:
         return fnode
     
     def __rtruediv__(self, other):
-        if not Real.__instancecheck__(other):
-            other = Real(other)
-        fnode = Real(other.value/self.value, [self, other], self.__wrapped_type.__truediv__)
+        if not WrappedFloat.__instancecheck__(other):
+            other = WrappedFloat(other)
+        fnode = WrappedFloat(other.value/self.value, [self, other], self.__wrapped_type.__truediv__)
         fnode.grad_wrt[self] = -other.value / self.value**2
         fnode.grad_wrt[other] = 1 / self.value
         self.__children.append(fnode)
@@ -94,9 +94,9 @@ class Real:
         return fnode
   
     def __pow__(self, other):
-        if not Real.__instancecheck__(other):
-            other = Real(other)
-        fnode = Real(self.value ** other.value, [self,other], self.__wrapped_type.__pow__)
+        if not WrappedFloat.__instancecheck__(other):
+            other = WrappedFloat(other)
+        fnode = WrappedFloat(self.value ** other.value, [self,other], self.__wrapped_type.__pow__)
         fnode.grad_wrt[self] = other.value * self.value**(other.value - 1)
         fnode.grad_wrt[other] = (self.value**other.value)*math_log(self.value)
         self.__children.append(fnode)
@@ -116,12 +116,12 @@ class Real:
 
     def log(x ,base=None):
         if base == None:
-            base = Real(math_exp(1))
-        elif not Real.__instancecheck__(base):
-            base = Real(base)
-        if not Real.__instancecheck__(x):
-            x = Real(x)
-        fnode = Real(math_log(x.value,base.value), [x,base], math_log)
+            base = WrappedFloat(math_exp(1))
+        elif not WrappedFloat.__instancecheck__(base):
+            base = WrappedFloat(base)
+        if not WrappedFloat.__instancecheck__(x):
+            x = WrappedFloat(x)
+        fnode = WrappedFloat(math_log(x.value,base.value), [x,base], math_log)
         fnode.grad_wrt[x] = 1/(x.value*math_log(base.value))
         fnode.grad_wrt[base] = -math_log(x.value)/(base.value*math_log(base.value**2))
         x.__children.append(fnode)
@@ -129,17 +129,17 @@ class Real:
         return fnode
 
     def sin(x):
-        if not Real.__instancecheck__(x):
-            x = Real(x)
-        fnode = Real(math_sin(x.value), [x], math_sin)
+        if not WrappedFloat.__instancecheck__(x):
+            x = WrappedFloat(x)
+        fnode = WrappedFloat(math_sin(x.value), [x], math_sin)
         fnode.grad_wrt[x] = math_cos(x.value)
         x.__children.append(fnode)
         return fnode
 
     def cos(x):
-        if not Real.__instancecheck__(x):
-            x = Real(x)
-        fnode = Real(math_cos(x.value), [x], math_cos)
+        if not WrappedFloat.__instancecheck__(x):
+            x = WrappedFloat(x)
+        fnode = WrappedFloat(math_cos(x.value), [x], math_cos)
         fnode.grad_wrt[x] = -math_sin(x.value)
         x.__children.append(fnode)
         return fnode
