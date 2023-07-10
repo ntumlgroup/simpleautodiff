@@ -64,12 +64,30 @@ An equation constructed by variables and operations.
 Hence, an algebraic equation can be represented as an expression tree.
 For example, the equation $\log(x_1)+x_1x_2-\sin(x_2)$ can be represented by an expression tree.
 
-**TODO: A Expression Tree**
+```mermaid
+graph BT;
+    x1=2-->log
+    x1=2-->mult
+    x2=5-->mult
+    x2=5-->sin
+    log-->add1
+    mult-->add1
+    add1-->add2
+    sin-->add2
+    add2-->y
+```
 
+The unary operations used are the logarithmic function (log) and the sine function (sin).
+The binary operations used are the multiplication (mult) and the addition (add).
 Each operation has an intermediate outcome.
-The outcome directly depends on its intermediate inputs; hence, its intermediate inputs are stated as its parents.
-Also, the outcome of an operation directly affects its children.
+For instance, the intermediate outcome of $\log(x)$ (taking $x=x_1=2$ as input) is $0.693$
+In this case, $x_1=2$ is the intermediate input of $\log(x)$.
+These intermediate outcomes can be stored as intermediate variables; for instance, $v_1=\log(x_1)=0.693$.
+
+Intermediate variables directly depends on its intermediate inputs; hence, its intermediate inputs are stated as its parents in the computation graph.
+Also, these variables (including the original input variables $x_1$ and $x_2$) only directly affects its children.
 Besides its parents and children, all the other effects of a node are indirect and pass through its parents and children.
+Let $v_1=\log(x_1)$ and $v_2=x_1x_2$, the varaible $x_1$ affect the final result $y$ only through the $v_1$ and $v_2$.
 
 To construct an expression tree, we define a class wrapping *floating-point* data type.
 The wrapped data type can be any data type supporting arithmetic operations.
