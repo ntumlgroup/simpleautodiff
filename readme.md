@@ -66,21 +66,21 @@ For example, the equation $\log(x_1)+x_1x_2-\sin(x_2)$ can be represented by an 
 
 ```mermaid
 graph BT;
-    x1=2-->log
-    x1=2-->mult
-    x2=5-->mult
-    x2=5-->sin
-    log-->add1
-    mult-->add1
-    add1-->add2
-    sin-->add2
-    add2-->y
+    x1=2-->v1=log
+    x1=2-->v2=mult
+    x2=5-->v2=mult
+    x2=5-->v3=sin
+    v1=log-->v4=add
+    v2=mult-->v4=add
+    v4=add-->v5=add
+    v3=sin-->v5=add
+    v5=add-->y
 ```
 
 The unary operations used are the logarithmic function (log) and the sine function (sin).
 The binary operations used are the multiplication (mult) and the addition (add).
 Each operation has an intermediate outcome.
-For instance, the intermediate outcome of $\log(x)$ (taking $x=x_1=2$ as input) is $0.693$
+For instance, the intermediate outcome of $\log(x)$ (taking $x=x_1=2$ as input) is $0.693$.
 In this case, $x_1=2$ is the intermediate input of $\log(x)$.
 These intermediate outcomes can be stored as intermediate variables; for instance, $v_1=\log(x_1)=0.693$.
 
