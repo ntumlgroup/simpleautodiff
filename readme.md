@@ -66,15 +66,15 @@ For example, the equation $\log(x_1)+x_1x_2-\sin(x_2)$ can be represented by an 
 
 ```mermaid
 graph BT;
-    x1=2-->v1=log
-    x1=2-->v2=mult
-    x2=5-->v2=mult
-    x2=5-->v3=sin
-    v1=log-->v4=add
-    v2=mult-->v4=add
-    v4=add-->v5=add
-    v3=sin-->v5=add
-    v5=add-->y
+    x1=2-->v1["v1=log(x1)"];
+    x1=2-->v2["v2=mult(x1,x2)"];
+    x2=5-->v2["v2=mult(x1,x2)"];
+    x2=5-->v3["v3=sin(x2)"];
+    v1["v1=log(x1)"]-->v4["v4=add(v1,v2)"];
+    v2["v2=mult(x1,x2)"]-->v4["v4=add(v1,v2)"];
+    v3["v3=sin(x2)"]-->v5["v5=add(v3,v4)"];
+    v4["v4=add(v1,v2)"]-->v5["v5=add(v3,v4)"];
+    v5["v5=add(v3,v4)"]-->y=v5
 ```
 
 The unary operations used are the logarithmic function (log) and the sine function (sin).
