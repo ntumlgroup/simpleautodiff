@@ -2,9 +2,13 @@
 This repository provides an autograd-like implementation of a bidirectional automatic differentiation.
 As the autograd, we use the function wrappers for generating the computation graph.
 Also, the tape is used in both the forward- and the reverse-mode automatic differentiation.
+
 ## Run the examples:
-This examples are taken from Table2 and Table3 in [Automatic Differentiation in Machine Learning: a Survey (Baydin et al., (2018))](https://www.jmlr.org/papers/volume18/17-468/17-468.pdf)
-Table2 is about the forward tangent trace.
+This examples are taken from Table 2 and Table 3 in [Automatic Differentiation in Machine Learning: a Survey (Baydin et al., (2018))](https://www.jmlr.org/papers/volume18/17-468/17-468.pdf).
+In these two examples, the equation $y=\log(x_1)+x_1x_2+\sin(x_2)$ with $(x_1,x_2)=(2,5)$ is used.
+
+In Table 2, it performs the forward primal trace to calculate the value of $y=11.652$ at first.
+Then, based on the outcome of forward primal trace, the forward tangent trace (forward-mode automatic differentiation)  from $x_1$ is performed.
 ```
 $ python table2.py
 val:2         |par:[]                            |ops:None                                              
@@ -22,7 +26,9 @@ val:0.693     |par:[2, 2.718]                    |grad:0.5
 val:10.693    |par:[0.693, 10]                   |grad:5.5                           
 val:11.652    |par:[10.693, -0.959]              |grad:5.5 
 ```
-Table3 is about the reverse adjoint trace.
+
+In Table 3, as in Table 2, it performs the forward primal trace first.
+Then, the backward adjoint trace (reverse-mode automatic differentiation) from $y$ is conducted.
 ```
 $ python table3.py
 val:2         |par:[]                            |ops:None                                              
@@ -43,18 +49,20 @@ val:0.693     |par:[2, 2.718]                    |grad:1
 val:2.718     |par:[]                            |grad:-0.127                        
 val:2         |par:[]                            |grad:5.5
 ```
-Both of them are started from a forward primal trace.
+The key to calculating gradients with the forward tangent trace and the backward adjoint trace is constructing the computational graph.
+In the next section, we discuss the concept and the techniques for the implementation of automatic differentiation.
 
 ## From Operations to Gradients: A guide to implement Automatic Differentiation
 In this section, we illustrate the concept of the expression tree, chain rule, and the codes implementing automatic differentiation.
 This section is organized as follows: First, the discussion focuses on the operations and the expression tree.
-Then, we connect the chain rule and the expression tree with the computational graph.
+Then, we connect the chain rule and the expression tree with the computation graph.
 Last, the purposes of different passes are illustrated.
 
 ### Operations, Expression Tree, and the Wrapped Function:
 There are two types of operations used: binary operations, such as addition and multiplication, and unary operations, such negation and absolute value.
 An equation constructed by variables and operations.
 Hence, an algebraic equation can be represented as an expression tree.
+For example, the equation $\log(x_1)+x_1x_2-\sin(x_2)$ can be represented by an expression tree.
 
 **TODO: A Expression Tree**
 
