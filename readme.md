@@ -87,7 +87,7 @@ These intermediate outcomes can be stored as intermediate variables; for instanc
 Intermediate variables directly depends on its intermediate inputs; hence, its intermediate inputs are stated as its parents in the computation graph.
 Also, these variables (including the original input variables $x_1$ and $x_2$) only directly affects its children.
 Besides its parents and children, all the other effects of a node are indirect and pass through its parents and children.
-Let $v_1=\log(x_1)$ and $v_2=x_1x_2$, the varaible $x_1$ affect the final result $y$ only through the $v_1$ and $v_2$.
+Let $v_1=\log(x_1)$ and $v_2=x_1x_2$, the variable $x_1$ affect the final result $y$ only through the $v_1$ and $v_2$.
 
 To construct an expression tree, we define a class wrapping *floating-point* data type.
 The wrapped data type can be any data type supporting arithmetic operations.
