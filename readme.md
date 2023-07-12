@@ -58,7 +58,7 @@ This section is organized as follows: First, the discussion focuses on the opera
 Then, we connect the chain rule and the expression tree with the computation graph.
 Last, the purposes of different passes are illustrated.
 
-### Operations, Expression Tree, and the Wrapped Function:
+### Operations, Expression Tree, and Nodes:
 There are two types of operations used: binary operations, such as addition and multiplication, and unary operations, such negation and absolute value.
 An equation constructed by variables and operations.
 Hence, an algebraic equation can be represented as an expression tree.
@@ -72,37 +72,96 @@ graph BT;
     x2=5-->v3["v3=sin(x2)"];
     v1["v1=log(x1)"]-->v4["v4=add(v1,v2)"];
     v2["v2=mult(x1,x2)"]-->v4["v4=add(v1,v2)"];
-    v3["v3=sin(x2)"]-->v5["v5=sub(v3,v4)"];
-    v4["v4=add(v1,v2)"]-->v5["v5=sub(v3,v4)"];
-    v5["v5=sub(v3,v4)"]-->y=v5
+    v3["v3=sin(x2)"]-->v5["v5=sub(v4,v3)"];
+    v4["v4=add(v1,v2)"]-->v5["v5=sub(v4,v3)"];
+    v5["v5=sub(v4,v3)"]-->y=v5
 ```
 
 The unary operations used are the logarithmic function (log) and the sine function (sin).
 The binary operations used are the multiplication (mult), the addition (add), and the substraction (sub).
-Each operation has an intermediate outcome.
-For instance, the intermediate outcome of $\log(x)$ (taking $x=x_1=2$ as input) is $0.693$.
-In this case, $x_1=2$ is the intermediate input of $\log(x)$.
-These intermediate outcomes can be stored as intermediate variables; for instance, $v_1=\log(x_1)=0.693$.
+Each leaf input ($x_1$ and $x_2$) and each execution of operator form a node in the expression tree.
+The basic fields of a node include:
+* **operation:** This field keeps track of what operation the node performs. If the node is the leaf input, it should be left as None or Null.
+* **parents:** To construct a tree, each node needs to keep track of their input nodes as their parents/children. Also, if the node is the leaf input, it should be left as an empty list.
+* **value:** Each operation of a node has an intermediate outcome. For instance, the intermediate outcome of the node $v_1=log(x_1)$ is $\log(2)=0.693$. For the leaf nodes, they keep their assigned values in their **value** field.
+* **children (optional):** To construct a tree, we may also keep track of the children of nodes rather than their parents. However, keeping parents is beneficial for the Backward trace. On the other hand, a direct list of children can help create a more efficient Forward Tagent Trace. These two properties will be discussed in the section about tracing. 
 
-Intermediate variables directly depends on its intermediate inputs; hence, its intermediate inputs are stated as its parents in the computation graph.
-Also, these variables (including the original input variables $x_1$ and $x_2$) only directly affects its children.
-Besides its parents and children, all the other effects of a node are indirect and pass through its parents and children.
-Let $v_1=\log(x_1)$ and $v_2=x_1x_2$, the variable $x_1$ affect the final result $y$ only through the $v_1$ and $v_2$.
+In the first step of constructing the tree, we need to design the Node.
+For brevity, here is a Node class `WrappedFloat` with basic fields that wraps *floating-point* type.
+```python
+class WrappedFloat:
+    __wrapped_type = float
+    def __init__(self, value:__wrapped_type, __parents=[], __op=None) -> None:
+        self.value = value
+        self.__parents = __parents
+        self.__op = __op
+```
+Here is the corresponding implementation of the previous concepts:
+* **value:** keeps the *floating-point* value of the intermediate outcome or the assigned value.
+* **__parents:** A list contains the parent `WrappedFloat` nodes. It is worth noting that it has to keep the order of the parents since some of the operations, like substraction and division, are order-dependent.
+* **__op:** The implementation of the operation field storing the operator or math function of the *floating-point* type.
 
-One simple technieque to construct the expression tree without requiring any extra effort from the user is to wrap the operation.
+### Wrapped Operations:
+In the last section, we introduced how to construct a minimal node of an expression tree.
+In this section, we focus on how to connect them.
+One simple technique to construct the expression tree without requiring any extra effort from the user is to use wrapped operations.
+For instance, the codes below were originally used to calculate the equation $y=(x_1+x_2)*x_2$ with $(x_1,x_2)=(2,5)$.
+```python
+>>> x1 = 2
+>>> x2 = 5
+>>> y = (x1+x2)*x2
+```
+We may substitute them with WrappedFloat and the customized arithmetic functions of WrappedFloat.
+```python
+>>> from simplebigrad import WrappedFloat
+>>> add = WrappedFloat.add
+>>> mul = WrappedFloat.mul
+>>> x1 = WrappedFloat(2)
+>>> x2 = WrappedFloat(5)
+>>> y = mul(add(x1,x2),x2)
+```
+The `+` and `*` operators are replaced with the addition function `add(x1,x2)` and the multiplication funciton `mul(x1,x2)`.
+These customized arithmetic functions are designed to keep track of the relationships between WrappedFloat nodes.
+Take the function `add(x1,x2)` as an instance; here is its minimalistic implementation.
+```python
+class WrappedFloat:
+    .
+    .
+    .
+    def add(x1,x2):
+        return WrappedFloat(value=x1.value+x2.value, 
+                            __parents=[x1,x2],
+                            __ops=WrappedFloat.__wrapped_type.__add__)
+```
+For each customized arithmetic function, the inputs are passed in.
+Then, it returns a node initialized with the floating-point value of the operation, keeping the information about the operation and the list of parents.
+Through the automatic recording of parentage, the expression tree is constructed by substituting the original functions with these customized functions.
 
-We substitute the original data with a class that wraps the *floating-point* data type.
-The wrapped data type can be any data type supporting arithmetic operations.
-
-**TODO: A Schematic Diagram of Wrapped Operation**
-
-For each overridden operator, the inputs are passed in.
-Then, the overridden operator generates a node to store the inputs as its parents.
-Hence, by applying these overridden operators, the expression tree is constructed without any extra effort.
-Operator overriding is the key to the automatic generation of the expression tree.
-
+Also, by overloading [operators](https://docs.python.org/3/library/operator.html), we may use these customized functions more naturally.
+```python
+class WrappedFloat:
+    .
+    .
+    .
+    def __add__(x1,x2):
+        return add(x1,x2)
+    def __mul__(x1,x2):
+        return mul(x1,x2)
+```
+Since these functions and operators wrapped the original operations, these implementations are called wrapped operations.
+```python
+>>> from simplebigrad import WrappedFloat
+>>> x1 = WrappedFloat(2)
+>>> x2 = WrappedFloat(5)
+>>> y = (x1+x2)*x2
+```
 
 ### Chain Rule and the Computation Graph:
+The values of the nodes directly depend on their parents.
+Also, these nodes (including the leaf node of input variables $x_1$ and $x_2$) only directly affects their children.
+Besides the effect on its parents and children, all the other effects of a node are indirect and pass through its parents and children.
+Let $v_1=\log(x_1)$ and $v_2=x_1x_2$, the variable $x_1$ affect the final result $y$ only through the $v_1$ and $v_2$.
+
 The chain rule is a formula that expresses the derivative of the composition of two differentiable function.
 It may also be expressed in Leibniz's notation. If a variable $y$ depends on the variable $v$, which itself depends on the variable $x$. In this case, the chain rule is expressed as 
 $$\dfrac{dy}{dx}=\dfrac{dy}{dv}\dfrac{dv}{dx}$$.
