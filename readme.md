@@ -98,7 +98,7 @@ class WrappedFloat:
 ```
 Here is the corresponding implementation of the previous concepts:
 * **value:** keeps the *floating-point* value of the intermediate outcome or the assigned value.
-* **__parents:** A list contains the parent `WrappedFloat` nodes. It is worth noting that it has to keep the order of the parents since some of the operations, like substraction and division, are order-dependent.
+* **__parents:** A list contains the parent `WrappedFloat` nodes. It is worth noting that it has to keep the order of the parents since some of the operations, like substraction and division, are not cummutative.
 * **__op:** The implementation of the operation field storing the operator or math function of the *floating-point* type.
 
 ### Wrapped Operations:
@@ -161,48 +161,32 @@ In this section, we briefly introduce the chain rule and mention another member 
 
 The chain rule is a formula that expresses the derivative of the composition of two differentiable function.
 It may also be expressed in Leibniz's notation. If a variable $y$ depends on the variable $v$, which itself depends on the variable $x$. In this case, the chain rule is expressed as 
-$$\dfrac{dy}{dx}=\dfrac{dy}{dv}\dfrac{dv}{dx}$$.
+$$\dfrac{dy}{dx}=\dfrac{dy}{dv}\dfrac{dv}{dx}.$$
 
 Assume that $V$ is the set with all the nodes $v_i$ of an expression tree.
 For calculating a derivative $\dfrac{dy}{dx}$ with such an expression tree, we may use
 
-$$\dfrac{dy}{dx}=\sum_{\forall v_i\in Parent(y) }\dfrac{dy}{dv_i}\dfrac{dv_i}{dx}$$.
+$$\dfrac{dy}{dx}=\sum_{\forall v_i\in Parent(y) }\dfrac{dy}{dv_i}\dfrac{dv_i}{dx}.$$
 
 Since $v_i\in Parent(y)$, the intermediate derivatives $\dfrac{dy}{dv_i}$ can be obtained by inspecting their operations.
-
 Also, $\dfrac{dv_i}{dx}$ can be obtained by recursively solving $\dfrac{dy}{dx}$ with $y=v_i$.
 
+We are able to solve the intermediate derivatives $\dfrac{dy}{dv_i}$(with $v_i\in Parent(y)$), easily.
+For instance $y=\sin(v_i)$, the $\dfrac{dy}{dv_i}=\cos(v_i)$ can be solved by knowing the feature of $sin$ function.
+For another instance $y=v_i\times v_{i+1}$, the $\dfrac{dy}{dv_i}=v_{i+1}$ and the $\dfrac{dy}{dv_{i+1}}=v_{i}$.
+Hence, for each operation, we may keep their intermediate derivatives in their fields.
+* **Intermediate derivatives:** This field keeps the derivatives or gradients correlating to the parents of the node.
 
-https://github.com/Fangop/simplebigrad/blob/2e043bcfb686ad7722ea1bcc299cabf6c758c87d/simplebigrad/simplebigrad.py#L10-L16
+Hence, in the real implementation, the WrappedFloat class has a few more fields than the 
+minimalistic implementation.
+https://github.com/Fangop/simplebigrad/blob/267ca306d50b798977fc79a37160ec1786ededc5/simplebigrad/simplebigrad.py#L10-L16
+Field member `grad` and `grad_wrt` record the gradients or derivatives.
+Field `grad_wrt` is a dictionary for the intermediate gradients with respect to the parents of the node.
 
-Each field member stores different information mentioned above.
-Field member `value` is for the numerical outcome of the operation.
-Filed members `__parents` and `__op` record the input instances and the operation, these two variables are called recipe in literature.
-Member `__children` is initialized as an empty list for the track of the following operations.
-In most of the implementations, `__children` is redundant since forward tangent trace is dominated by backward adjoint trace in most of the practical use.
-Last, members `grad` and `grad_wrt` record the gradients.
-Member `grad_wrt` is a dictionary for the intermediate gradients with respect to the parents of the node.
-
-For an unary operation $y=f(x)$, one intermediate derivative $\dfrac{dy}{dx}$ may be calculated and stored.
-Hence, take $y=sin(x)$ as example, the implementation generates a foward node (`fnode`) to store the information of the operation:
-
-https://github.com/Fangop/simplebigrad/blob/2e043bcfb686ad7722ea1bcc299cabf6c758c87d/simplebigrad/simplebigrad.py#L131-L137
-
-We may see that the value of $sin(x)$, the parents list of $[x]$, the operations `math_sin` are the arguements passed for the initialization of the `fnode`.
-The intermediate gradient $\dfrac{dsin(x)}{dx}=cos(x)$ is stored in the member field `grad_wrt[x]`.
-Then, the parent $x$ also keep track of its child `fnode`.
-Eventually, the `fnode` is returned for the following operations.
-
-In the case of the binary operations $y=f(x_1,x_2)$ two intermediate derivatives $\dfrac{dy}{dx_1}, \dfrac{dy}{dx_2}$ can be obtained.
-Hence, for every intermediate variable, we store the intermediate derivatives for the calculation.
-Take $y=\dfrac{x_1}{x_2}$ as example, the implementation, same, generates a foward node (`fnode`) to store the information of the operation:
-
-https://github.com/Fangop/simplebigrad/blob/2e043bcfb686ad7722ea1bcc299cabf6c758c87d/simplebigrad/simplebigrad.py#L76-L84
-
-Since we implement the division by operator overriding, the parameters `self` and `other` are the $x_1$ and the $x_2$ in the formula, respectively.
-Notice that field member `__parents` is a list for recording the order since not all the binary operations are commutative.
-Another thing worth noting is that, for binary operations, there are two intermediate gradients with respect to their two parents (inputs).
-Hence, $\dfrac{d(x_1/x_2)}{dx_1}=\dfrac{1}{x_2}$ and $\dfrac{d(x_1/x_2)}{dx_2}=-\dfrac{x_1}{(x_2)^2}$ are stored.
+Take $y=\dfrac{x_1}{x_2}$ as example, the implementation generates a foward node (`fnode`) to store the information of the operation:
+https://github.com/Fangop/simplebigrad/blob/267ca306d50b798977fc79a37160ec1786ededc5/simplebigrad/simplebigrad.py#L78-L88
+The intermediate gradients $\dfrac{d(x_1/x_2)}{dx_1}=\dfrac{1}{x_2}$ and $\dfrac{d(x_1/x_2)}{dx_2}=-\dfrac{x_1}{(x_2)^2}$ are stored in the dictionary field `grad_wrt`.
+Another feature worth noting is that we keep track of the children nodes for a clean implementation of Forward Tagent Trace.
 
 ### Forward Primal Trace:
 ### Forward Tagent Trace:
