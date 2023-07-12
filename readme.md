@@ -134,8 +134,8 @@ class WrappedFloat:
                             __ops=WrappedFloat.__wrapped_type.__add__)
 ```
 For each customized arithmetic function, the inputs are passed in.
-Then, it returns a node initialized with the floating-point value of the operation, keeping the information about the operation and the list of parents.
-Through the automatic recording of parentage, the expression tree is constructed by substituting the original functions with these customized functions.
+Then, it returns a `WrappedFloat` node initialized with the *floating-point* value of the operation, keeping the information about the operation and the list of parents.
+Through the automatic recording of parentage, the expression tree is constructed by easily substituting the original functions with these customized functions.
 
 Also, by overloading [operators](https://docs.python.org/3/library/operator.html), we may use these customized functions more naturally.
 ```python
@@ -157,10 +157,7 @@ Since these functions and operators wrapped the original operations, these imple
 ```
 
 ### Chain Rule and the Computation Graph:
-The values of the nodes directly depend on their parents.
-Also, these nodes (including the leaf node of input variables $x_1$ and $x_2$) only directly affects their children.
-Besides the effect on its parents and children, all the other effects of a node are indirect and pass through its parents and children.
-Let $v_1=\log(x_1)$ and $v_2=x_1x_2$, the variable $x_1$ affect the final result $y$ only through the $v_1$ and $v_2$.
+In this section, we briefly introduce the chain rule and mention another member worth keeping in each node for making a simple expression tree a computation graph.
 
 The chain rule is a formula that expresses the derivative of the composition of two differentiable function.
 It may also be expressed in Leibniz's notation. If a variable $y$ depends on the variable $v$, which itself depends on the variable $x$. In this case, the chain rule is expressed as 
@@ -172,11 +169,9 @@ For calculating a derivative $\dfrac{dy}{dx}$ with such an expression tree, we m
 $$\dfrac{dy}{dx}=\sum_{\forall v_i\in Parent(y) }\dfrac{dy}{dv_i}\dfrac{dv_i}{dx}$$.
 
 Since $v_i\in Parent(y)$, the intermediate derivatives $\dfrac{dy}{dv_i}$ can be obtained by inspecting their operations.
+
 Also, $\dfrac{dv_i}{dx}$ can be obtained by recursively solving $\dfrac{dy}{dx}$ with $y=v_i$.
 
-Since the intermediate derivative is used, it is also stored in the nodes.
-In this repository, we implement a wrapped Real value object for performing AutoDiff.
-The initialization of a Real instance:
 
 https://github.com/Fangop/simplebigrad/blob/2e043bcfb686ad7722ea1bcc299cabf6c758c87d/simplebigrad/simplebigrad.py#L10-L16
 
