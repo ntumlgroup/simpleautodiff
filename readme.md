@@ -72,13 +72,13 @@ graph BT;
     x2=5-->v3["v3=sin(x2)"];
     v1["v1=log(x1)"]-->v4["v4=add(v1,v2)"];
     v2["v2=mult(x1,x2)"]-->v4["v4=add(v1,v2)"];
-    v3["v3=sin(x2)"]-->v5["v5=add(v3,v4)"];
-    v4["v4=add(v1,v2)"]-->v5["v5=add(v3,v4)"];
-    v5["v5=add(v3,v4)"]-->y=v5
+    v3["v3=sin(x2)"]-->v5["v5=sub(v3,v4)"];
+    v4["v4=add(v1,v2)"]-->v5["v5=sub(v3,v4)"];
+    v5["v5=sub(v3,v4)"]-->y=v5
 ```
 
 The unary operations used are the logarithmic function (log) and the sine function (sin).
-The binary operations used are the multiplication (mult) and the addition (add).
+The binary operations used are the multiplication (mult), the addition (add), and the substraction (sub).
 Each operation has an intermediate outcome.
 For instance, the intermediate outcome of $\log(x)$ (taking $x=x_1=2$ as input) is $0.693$.
 In this case, $x_1=2$ is the intermediate input of $\log(x)$.
@@ -89,15 +89,18 @@ Also, these variables (including the original input variables $x_1$ and $x_2$) o
 Besides its parents and children, all the other effects of a node are indirect and pass through its parents and children.
 Let $v_1=\log(x_1)$ and $v_2=x_1x_2$, the variable $x_1$ affect the final result $y$ only through the $v_1$ and $v_2$.
 
-To construct an expression tree, we define a class wrapping *floating-point* data type.
+One simple technieque to construct the expression tree without requiring any extra effort from the user is to wrap the operation.
+
+We substitute the original data with a class that wraps the *floating-point* data type.
 The wrapped data type can be any data type supporting arithmetic operations.
-Operator overriding is the key to the automatic generation of the expression tree.
 
 **TODO: A Schematic Diagram of Wrapped Operation**
 
 For each overridden operator, the inputs are passed in.
 Then, the overridden operator generates a node to store the inputs as its parents.
 Hence, by applying these overridden operators, the expression tree is constructed without any extra effort.
+Operator overriding is the key to the automatic generation of the expression tree.
+
 
 ### Chain Rule and the Computation Graph:
 The chain rule is a formula that expresses the derivative of the composition of two differentiable function.
