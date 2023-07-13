@@ -171,7 +171,7 @@ $$\dfrac{dy}{dx}=\sum_{\forall v_i\in Parent(y) }\dfrac{dy}{dv_i}\dfrac{dv_i}{dx
 Since $v_i\in Parent(y)$, the intermediate derivatives $\dfrac{dy}{dv_i}$ can be obtained by inspecting their operations.
 Also, $\dfrac{dv_i}{dx}$ can be obtained by recursively solving $\dfrac{dy}{dx}$ with $y=v_i$.
 
-We are able to solve the intermediate derivatives $\dfrac{dy}{dv_i}$(with $v_i\in Parent(y)$), easily.
+We are able to solve the intermediate derivatives $\dfrac{dy}{dv_i}$(with $v_i \in Parent(y)$), easily.
 For instance $y=\sin(v_i)$, the $\dfrac{dy}{dv_i}=\cos(v_i)$ can be solved by knowing the feature of $sin$ function.
 For another instance $y=v_i\times v_{i+1}$, the $\dfrac{dy}{dv_i}=v_{i+1}$ and the $\dfrac{dy}{dv_{i+1}}=v_{i}$.
 Hence, for each operation, we may keep their intermediate derivatives in their fields.
