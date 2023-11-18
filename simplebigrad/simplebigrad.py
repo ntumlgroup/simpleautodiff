@@ -184,6 +184,33 @@ class WrappedFloat:
                     str(node.grad.__round__(3)))
                     )
 
+    def recursive_forward(self, q=None, __visisted=None):
+        if self.verbose:
+            print("Recursive Forward Tangent Trace:")
+        if __visisted == None and q==None:
+            __visisted = set()
+            __visisted.add(self)
+            q = deque()
+            self.grad = 1
+        for child in self.__children:
+            if child not in __visisted:
+                __visisted.add(child)
+                q.append(child)
+            Δoutput_Δnode = self.grad 
+            Δchild_Δnode = child.grad_wrt[self]
+            if child.grad == None:
+                child.grad = Δoutput_Δnode * Δchild_Δnode
+            else:
+                child.grad += Δoutput_Δnode * Δchild_Δnode
+            if self.verbose == True:
+                print('val:{:<10}|par:{:<30}|grad:{:<30}'.format(
+                    str(child.value.__round__(3)),
+                    str([p.value.__round__(3) for p in child.__parents]),
+                    str(child.grad.__round__(3)))
+                    )
+        if q:
+            q.popleft().recursive_forward(q,  __visisted)
+
     def backward(self):
         if self.verbose:
             print("Reverse Adjoint Trace:")
