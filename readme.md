@@ -5,7 +5,6 @@ Also, the tape is used in both the forward mode and the reverse mode.
 
 We started this project for people who know about automatic differentiation and want to learn how to implement it.
 Besides codes, we share tutorial slides and documents.
-
 ## Run the examples:
 Here, we have two examples taken from Table 2 and Table 3 in [Automatic Differentiation in Machine Learning: a Survey (Baydin et al., (2018))](https://www.jmlr.org/papers/volume18/17-468/17-468.pdf).
 In these two examples, the equation $y=\log(x_1)+x_1x_2+\sin(x_2)$ with $(x_1,x_2)=(2,5)$ is used.
@@ -103,14 +102,11 @@ value:2              |parents:[]                            |gradient:5.5
 ```
 Everyone can refer to our materials for plain illustrations of the implementation.
 
-## Download:
+## Download and Environments:
 
 ## Document and Slides
-The document and slides can be found at [].
+For those who are interested in learning how to implement, we provide document and slides at [].
 These materials introduce basic concepts and focus on implementation.
-We first explain why we need a computational graph to apply the chain rule.
-Then, we illustrate how to design nodes and use them to construct the graph.
-With the graph, the implementation of the forward mode is discussed.
 
 ## Lectures:
 The video of lecture can be found at [].
