@@ -1,6 +1,6 @@
-from simplebigrad import Node
+from simplebigrad import Node, log, sin, backward
 Node.verbose = True
 x1 = Node(2)
 x2 = Node(5)
-y = Node.log(x1) + x1*x2 - Node.sin(x2)
-y.backward()
+y = log(x1) + x1*x2 - sin(x2)
+backward(y)

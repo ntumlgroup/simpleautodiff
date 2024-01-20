@@ -1,2 +1,2 @@
-from .simplebigrad import Node
+from .simplebigrad import *
 __title__ = 'simplebigrad'

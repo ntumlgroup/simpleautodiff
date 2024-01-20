@@ -3,7 +3,6 @@ from math import exp as math_exp
 from math import sin as math_sin
 from math import cos as math_cos
 
-
 class Node:
     """A wrapped floating-point"""
     __wrapped_type = float
@@ -29,199 +28,203 @@ class Node:
         else:
             return f'Node(value={self.value:.2f}, grad=(Unsolved)'
 
-    def add(node1, node2):
-        if not Node.__instancecheck__(node1):
-            node1 = Node(node1)
-        if not Node.__instancecheck__(node2):
-            node2 = Node(node2)
-        childNode = Node(node1.value+node2.value,
-                         [node1, node2], 'add')
-        childNode.grad_wrt[node1] = 1
-        childNode.grad_wrt[node2] = 1
-        node1.children.append(childNode)
-        node2.children.append(childNode)
-        return childNode
-
-    def sub(node1, node2):
-        if not Node.__instancecheck__(node1):
-            node1 = Node(node1)
-        if not Node.__instancecheck__(node2):
-            node2 = Node(node2)
-        childNode = Node(node1.value-node2.value,
-                         [node1, node2], 'sub')
-        childNode.grad_wrt[node1] = 1
-        childNode.grad_wrt[node2] = -1
-        node1.children.append(childNode)
-        node2.children.append(childNode)
-        return childNode
-
-    def mul(node1, node2):
-        if not Node.__instancecheck__(node1):
-            node1 = Node(node1)
-        if not Node.__instancecheck__(node2):
-            node2 = Node(node2)
-        childNode = Node(node1.value * node2.value,
-                         [node1, node2], 'mul')
-        childNode.grad_wrt[node1] = node2.value
-        childNode.grad_wrt[node2] = node1.value
-        node1.children.append(childNode)
-        node2.children.append(childNode)
-        return childNode
-
-    def pow(node1, node2):
-        if not Node.__instancecheck__(node1):
-            node1 = Node(node1)
-        if not Node.__instancecheck__(node2):
-            node2 = Node(node2)
-        childNode = Node(node1.value ** node2.value,
-                         [node1, node2], 'pow')
-        childNode.grad_wrt[node1] = node2.value * \
-            node1.value**(node2.value - 1)
-        childNode.grad_wrt[node2] = (
-            node1.value**node2.value)*math_log(node1.value)
-        node1.children.append(childNode)
-        node2.children.append(childNode)
-        return childNode
-
-    def div(node1, node2):
-        if not Node.__instancecheck__(node1):
-            node1 = Node(node1)
-        if not Node.__instancecheck__(node2):
-            node2 = Node(node2)
-        childNode = Node(node1.value / node2.value,
-                         [node1, node2], 'div')
-        childNode.grad_wrt[node1] = 1 / node1.value
-        childNode.grad_wrt[node2] = -node1.value / node2.value**2
-        node1.children.append(childNode)
-        node2.children.append(childNode)
-        return childNode
 
     def __add__(self, other):
-        return self.add(other)
+        return add(self,other)
 
     def __radd__(self, other):
-        return self.add(other)
+        return add(other,self)
 
     def __sub__(self, other):
-        return Node.sub(self, other)
+        return sub(self, other)
 
     def __rsub__(self, other):
-        return Node.sub(other, self)
+        return sub(other, self)
 
     def __mul__(self, other):
-        return self.mul(other)
+        return mul(self,other)
 
     def __rmul__(self, other):
-        return self.mul(other)
+        return mul(other,self)
 
     def __truediv__(self, other):
-        return Node.div(self, other)
+        return div(self, other)
 
     def __rtruediv__(self, other):
-        return Node.div(other, self)
+        return div(other, self)
 
     def __pow__(self, other):
-        return Node.pow(self, other)
+        return pow(self, other)
 
     def __rpow__(self, other):
-        return Node.pow(other, self)
+        return pow(other, self)
 
     def __neg__(self):
-        return self.mul(-1)
+        return mul(self,-1)
 
-    def log(node):
-        if not Node.__instancecheck__(node):
-            node = Node(node)
-        childNode = Node(math_log(node.value),
-                         [node], 'log')
-        childNode.grad_wrt[node] = 1/(node.value*math_log(math_exp(1)))
-        node.children.append(childNode)
-        return childNode
+def add(node1, node2):
+    if not Node.__instancecheck__(node1):
+        node1 = Node(node1)
+    if not Node.__instancecheck__(node2):
+        node2 = Node(node2)
+    childNode = Node(node1.value+node2.value,
+                        [node1, node2], 'add')
+    childNode.grad_wrt[node1] = 1
+    childNode.grad_wrt[node2] = 1
+    node1.children.append(childNode)
+    node2.children.append(childNode)
+    return childNode
 
-    def sin(node):
-        if not Node.__instancecheck__(node):
-            node1 = Node(node)
-        childNode = Node(math_sin(node.value), [node], 'sin')
-        childNode.grad_wrt[node] = math_cos(node.value)
-        node.children.append(childNode)
-        return childNode
+def sub(node1, node2):
+    if not Node.__instancecheck__(node1):
+        node1 = Node(node1)
+    if not Node.__instancecheck__(node2):
+        node2 = Node(node2)
+    childNode = Node(node1.value-node2.value,
+                        [node1, node2], 'sub')
+    childNode.grad_wrt[node1] = 1
+    childNode.grad_wrt[node2] = -1
+    node1.children.append(childNode)
+    node2.children.append(childNode)
+    return childNode
 
-    def cos(node):
-        if not Node.__instancecheck__(node):
-            node1 = Node(node)
-        childNode = Node(math_cos(node1.value), [node], 'cos')
-        childNode.grad_wrt[node] = -math_sin(node.value)
-        node.children.append(childNode)
-        return childNode
+def mul(node1, node2):
+    if not Node.__instancecheck__(node1):
+        node1 = Node(node1)
+    if not Node.__instancecheck__(node2):
+        node2 = Node(node2)
+    childNode = Node(node1.value * node2.value,
+                        [node1, node2], 'mul')
+    childNode.grad_wrt[node1] = node2.value
+    childNode.grad_wrt[node2] = node1.value
+    node1.children.append(childNode)
+    node2.children.append(childNode)
+    return childNode
 
-    def topological_order(self):
-        def _add_children(node):
-            if node not in visited:
-                visited.add(node)
-                for child in node.children:
-                    _add_children(child)
-                ordered.append(node)
+def pow(node1, node2):
+    if not Node.__instancecheck__(node1):
+        node1 = Node(node1)
+    if not Node.__instancecheck__(node2):
+        node2 = Node(node2)
+    childNode = Node(node1.value ** node2.value,
+                        [node1, node2], 'pow')
+    childNode.grad_wrt[node1] = node2.value * \
+        node1.value**(node2.value - 1)
+    childNode.grad_wrt[node2] = (
+        node1.value**node2.value)*math_log(node1.value)
+    node1.children.append(childNode)
+    node2.children.append(childNode)
+    return childNode
 
-        ordered, visited = [], set()
-        _add_children(self)
-        return ordered
+def div(node1, node2):
+    if not Node.__instancecheck__(node1):
+        node1 = Node(node1)
+    if not Node.__instancecheck__(node2):
+        node2 = Node(node2)
+    childNode = Node(node1.value / node2.value,
+                        [node1, node2], 'div')
+    childNode.grad_wrt[node1] = 1 / node1.value
+    childNode.grad_wrt[node2] = -node1.value / node2.value**2
+    node1.children.append(childNode)
+    node2.children.append(childNode)
+    return childNode
 
-    def forward(self):
-        if self.verbose:
-            print("Forward Tangent Trace:")
 
-        def _compute_grad_of_children(node):
+def log(node):
+    if not Node.__instancecheck__(node):
+        node = Node(node)
+    childNode = Node(math_log(node.value),
+                        [node], 'log')
+    childNode.grad_wrt[node] = 1/(node.value*math_log(math_exp(1)))
+    node.children.append(childNode)
+    return childNode
+
+def sin(node):
+    if not Node.__instancecheck__(node):
+        node1 = Node(node)
+    childNode = Node(math_sin(node.value), [node], 'sin')
+    childNode.grad_wrt[node] = math_cos(node.value)
+    node.children.append(childNode)
+    return childNode
+
+def cos(node):
+    if not Node.__instancecheck__(node):
+        node1 = Node(node)
+    childNode = Node(math_cos(node1.value), [node], 'cos')
+    childNode.grad_wrt[node] = -math_sin(node.value)
+    node.children.append(childNode)
+    return childNode
+
+
+def topological_order(rootNode):
+    def add_children(node):
+        if node not in visited:
+            visited.add(node)
             for child in node.children:
-                Δoutput_Δnode = node.grad
-                Δchild_Δnode = child.grad_wrt[node]
-                if child.grad == None:
-                    child.grad = Δoutput_Δnode * Δchild_Δnode
-                else:
-                    child.grad += Δoutput_Δnode * Δchild_Δnode
-        self.grad = 1
-        ordered = reversed(self.topological_order())
-        for node in ordered:
-            _compute_grad_of_children(node)
-            if self.verbose == True:
-                print('value:{:<15}|parents:{:<30}|gradient:{:<30}'.format(
-                    str(node.value.__round__(3)),
-                    str([p.value.__round__(3) for p in node.parents]),
-                    str(node.grad.__round__(3)))
-                )
+                add_children(child)
+            ordered.append(node)
 
-    def backward(self):
-        if self.verbose:
-            print("Reverse Adjoint Trace:")
+    ordered, visited = [], set()
+    add_children(rootNode)
+    return reversed(ordered)
 
-        def _topological_order():
-            def _add_parents(node):
-                if node not in visited:
-                    visited.add(node)
-                    for parent in node.parents:
-                        _add_parents(parent)
-                    ordered.append(node)
+def forward(rootNode):
+    if rootNode.verbose:
+        print("Forward Tangent Trace:")
 
-            ordered, visited = [], set()
-            _add_parents(self)
-            return ordered
+    def _compute_grad_of_children(node):
+        for child in node.children:
+            Δoutput_Δnode = node.grad
+            Δchild_Δnode = child.grad_wrt[node]
+            if child.grad == None:
+                child.grad = Δoutput_Δnode * Δchild_Δnode
+            else:
+                child.grad += Δoutput_Δnode * Δchild_Δnode
+    rootNode.grad = 1
+    ordered = reversed(topological_order(rootNode))
+    for node in ordered:
+        _compute_grad_of_children(node)
+        if rootNode.verbose == True:
+            print('value:{:<15}|parents:{:<30}|gradient:{:<30}'.format(
+                str(node.value.__round__(3)),
+                str([p.value.__round__(3) for p in node.parents]),
+                str(node.grad.__round__(3)))
+            )
 
-        def _compute_grad_of_parents(node):
+def reverse_topological_order(rootNode):
+    def add_parents(node):
+        if node not in visited:
+            visited.add(node)
             for parent in node.parents:
-                Δoutput_Δnode = node.grad
-                Δnode_Δparent = node.grad_wrt[parent]
+                add_parents(parent)
+            ordered.append(node)
 
-                if parent.grad == None:
-                    parent.grad = Δoutput_Δnode * Δnode_Δparent
-                else:
-                    parent.grad += Δoutput_Δnode * Δnode_Δparent
+    ordered, visited = [], set()
+    add_parents(rootNode)
+    return reversed(ordered)
 
-        self.grad = 1
-        ordered = reversed(_topological_order())
-        for node in ordered:
-            _compute_grad_of_parents(node)
-            if self.verbose == True:
-                print('value:{:<15}|parents:{:<30}|gradient:{:<30}'.format(
-                    str(node.value.__round__(3)),
-                    str([p.value.__round__(3) for p in node.parents]),
-                    str(node.grad.__round__(3)))
-                )
+
+def backward(rootNode):
+    if rootNode.verbose:
+        print("Reverse Adjoint Trace:")
+
+    def _compute_grad_of_parents(node):
+        for parent in node.parents:
+            Δoutput_Δnode = node.grad
+            Δnode_Δparent = node.grad_wrt[parent]
+
+            if parent.grad == None:
+                parent.grad = Δoutput_Δnode * Δnode_Δparent
+            else:
+                parent.grad += Δoutput_Δnode * Δnode_Δparent
+
+    rootNode.grad = 1
+    ordered = reverse_topological_order(rootNode)
+    for node in ordered:
+        _compute_grad_of_parents(node)
+        if rootNode.verbose == True:
+            print('value:{:<15}|parents:{:<30}|gradient:{:<30}'.format(
+                str(node.value.__round__(3)),
+                str([p.value.__round__(3) for p in node.parents]),
+                str(node.grad.__round__(3)))
+            )
