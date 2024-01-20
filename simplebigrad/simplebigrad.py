@@ -9,7 +9,7 @@ class Node:
     __wrapped_type = float
     verbose = False
 
-    def __init__(self, value: __wrapped_type, parents=[], operator=None) -> None:
+    def __init__(self, value: __wrapped_type, parents=[], operator='input') -> None:
         self.value = value
         self.parents = parents
         self.children = []
@@ -35,7 +35,7 @@ class Node:
         if not Node.__instancecheck__(node2):
             node2 = Node(node2)
         childNode = Node(node1.value+node2.value,
-                         [node1, node2], Node.__wrapped_type.__add__)
+                         [node1, node2], 'add')
         childNode.grad_wrt[node1] = 1
         childNode.grad_wrt[node2] = 1
         node1.children.append(childNode)
@@ -48,7 +48,7 @@ class Node:
         if not Node.__instancecheck__(node2):
             node2 = Node(node2)
         childNode = Node(node1.value-node2.value,
-                         [node1, node2], Node.__wrapped_type.__sub__)
+                         [node1, node2], 'sub')
         childNode.grad_wrt[node1] = 1
         childNode.grad_wrt[node2] = -1
         node1.children.append(childNode)
@@ -61,7 +61,7 @@ class Node:
         if not Node.__instancecheck__(node2):
             node2 = Node(node2)
         childNode = Node(node1.value * node2.value,
-                         [node1, node2], Node.__wrapped_type.__mul__)
+                         [node1, node2], 'mul')
         childNode.grad_wrt[node1] = node2.value
         childNode.grad_wrt[node2] = node1.value
         node1.children.append(childNode)
@@ -74,7 +74,7 @@ class Node:
         if not Node.__instancecheck__(node2):
             node2 = Node(node2)
         childNode = Node(node1.value ** node2.value,
-                         [node1, node2], Node.__wrapped_type.__pow__)
+                         [node1, node2], 'pow')
         childNode.grad_wrt[node1] = node2.value * \
             node1.value**(node2.value - 1)
         childNode.grad_wrt[node2] = (
@@ -89,7 +89,7 @@ class Node:
         if not Node.__instancecheck__(node2):
             node2 = Node(node2)
         childNode = Node(node1.value / node2.value,
-                         [node1, node2], Node.__wrapped_type.__truediv__)
+                         [node1, node2], 'div')
         childNode.grad_wrt[node1] = 1 / node1.value
         childNode.grad_wrt[node2] = -node1.value / node2.value**2
         node1.children.append(childNode)
@@ -129,26 +129,19 @@ class Node:
     def __neg__(self):
         return self.mul(-1)
 
-    def log(node, base=None):
+    def log(node):
         if not Node.__instancecheck__(node):
             node = Node(node)
-        if base == None:
-            base = Node(math_exp(1))
-        elif not Node.__instancecheck__(base):
-            base = Node(base)
-        childNode = Node(math_log(node.value, base.value),
-                         [node, base], math_log)
-        childNode.grad_wrt[node] = 1/(node.value*math_log(base.value))
-        childNode.grad_wrt[base] = - \
-            math_log(node.value)/(base.value*math_log(base.value**2))
+        childNode = Node(math_log(node.value),
+                         [node], 'log')
+        childNode.grad_wrt[node] = 1/(node.value*math_log(math_exp(1)))
         node.children.append(childNode)
-        base.children.append(childNode)
         return childNode
 
     def sin(node):
         if not Node.__instancecheck__(node):
             node1 = Node(node)
-        childNode = Node(math_sin(node.value), [node], math_sin)
+        childNode = Node(math_sin(node.value), [node], 'sin')
         childNode.grad_wrt[node] = math_cos(node.value)
         node.children.append(childNode)
         return childNode
@@ -156,11 +149,11 @@ class Node:
     def cos(node):
         if not Node.__instancecheck__(node):
             node1 = Node(node)
-        childNode = Node(math_cos(node1.value), [node], math_cos)
+        childNode = Node(math_cos(node1.value), [node], 'cos')
         childNode.grad_wrt[node] = -math_sin(node.value)
         node.children.append(childNode)
         return childNode
-    
+
     def topological_order(self):
         def _add_children(node):
             if node not in visited:
