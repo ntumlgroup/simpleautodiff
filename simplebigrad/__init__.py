@@ -1,2 +1,2 @@
-from .simplebigrad import WrappedFloat
+from .simplebigrad import Node
 __title__ = 'simplebigrad'

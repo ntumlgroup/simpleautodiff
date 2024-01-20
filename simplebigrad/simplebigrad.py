@@ -17,7 +17,7 @@ class Node:
         self.grad = None
         self.grad_wrt = {}
         if self.verbose == True:
-            print('Create Node:\n\tvalue:{:<10}\n\tparents:{:<30}\n\toperator:{:<50}'.format(
+            print('Create Node:\n\tvalue:{:<15}\n\tparents:{:<30}\n\toperator:{:<50}'.format(
                 str(self.value.__round__(3)),
                 str([p.value.__round__(3) for p in self.parents]),
                 self.operator.__repr__())
@@ -129,53 +129,53 @@ class Node:
     def __neg__(self):
         return self.mul(-1)
 
-    def log(node1, base=None):
-        if not Node.__instancecheck__(node1):
-            node1 = Node(node1)
+    def log(node, base=None):
+        if not Node.__instancecheck__(node):
+            node = Node(node)
         if base == None:
             base = Node(math_exp(1))
         elif not Node.__instancecheck__(base):
             base = Node(base)
-        childNode = Node(math_log(node1.value, base.value),
-                         [node1, base], math_log)
-        childNode.grad_wrt[node1] = 1/(node1.value*math_log(base.value))
+        childNode = Node(math_log(node.value, base.value),
+                         [node, base], math_log)
+        childNode.grad_wrt[node] = 1/(node.value*math_log(base.value))
         childNode.grad_wrt[base] = - \
-            math_log(node1.value)/(base.value*math_log(base.value**2))
-        node1.children.append(childNode)
+            math_log(node.value)/(base.value*math_log(base.value**2))
+        node.children.append(childNode)
         base.children.append(childNode)
         return childNode
 
-    def sin(node1):
-        if not Node.__instancecheck__(node1):
-            node1 = Node(node1)
-        childNode = Node(math_sin(node1.value), [node1], math_sin)
-        childNode.grad_wrt[node1] = math_cos(node1.value)
-        node1.children.append(childNode)
+    def sin(node):
+        if not Node.__instancecheck__(node):
+            node1 = Node(node)
+        childNode = Node(math_sin(node.value), [node], math_sin)
+        childNode.grad_wrt[node] = math_cos(node.value)
+        node.children.append(childNode)
         return childNode
 
-    def cos(node1):
-        if not Node.__instancecheck__(node1):
-            node1 = Node(node1)
-        childNode = Node(math_cos(node1.value), [node1], math_cos)
-        childNode.grad_wrt[node1] = -math_sin(node1.value)
-        node1.children.append(childNode)
+    def cos(node):
+        if not Node.__instancecheck__(node):
+            node1 = Node(node)
+        childNode = Node(math_cos(node1.value), [node], math_cos)
+        childNode.grad_wrt[node] = -math_sin(node.value)
+        node.children.append(childNode)
         return childNode
+    
+    def topological_order(self):
+        def _add_children(node):
+            if node not in visited:
+                visited.add(node)
+                for child in node.children:
+                    _add_children(child)
+                ordered.append(node)
+
+        ordered, visited = [], set()
+        _add_children(self)
+        return ordered
 
     def forward(self):
         if self.verbose:
             print("Forward Tangent Trace:")
-
-        def _topological_order():
-            def _add_children(node):
-                if node not in visited:
-                    visited.add(node)
-                    for child in node.children:
-                        _add_children(child)
-                    ordered.append(node)
-
-            ordered, visited = [], set()
-            _add_children(self)
-            return ordered
 
         def _compute_grad_of_children(node):
             for child in node.children:
@@ -186,11 +186,11 @@ class Node:
                 else:
                     child.grad += Δoutput_Δnode * Δchild_Δnode
         self.grad = 1
-        ordered = reversed(_topological_order())
+        ordered = reversed(self.topological_order())
         for node in ordered:
             _compute_grad_of_children(node)
             if self.verbose == True:
-                print('val:{:<10}|par:{:<30}|grad:{:<30}'.format(
+                print('value:{:<15}|parents:{:<30}|gradient:{:<30}'.format(
                     str(node.value.__round__(3)),
                     str([p.value.__round__(3) for p in node.parents]),
                     str(node.grad.__round__(3)))
@@ -227,7 +227,7 @@ class Node:
         for node in ordered:
             _compute_grad_of_parents(node)
             if self.verbose == True:
-                print('val:{:<10}|par:{:<30}|grad:{:<30}'.format(
+                print('value:{:<15}|parents:{:<30}|gradient:{:<30}'.format(
                     str(node.value.__round__(3)),
                     str([p.value.__round__(3) for p in node.parents]),
                     str(node.grad.__round__(3)))

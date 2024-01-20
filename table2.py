@@ -1,6 +1,6 @@
-from simplebigrad import WrappedFloat
-WrappedFloat.verbose =True
-x1 = WrappedFloat(2)
-x2 = WrappedFloat(5)
-y = WrappedFloat.log(x1) + x1*x2 -WrappedFloat.sin(x2)
+from simplebigrad import Node
+Node.verbose =True
+x1 = Node(2)
+x2 = Node(5)
+y = Node.log(x1) + x1*x2 -Node.sin(x2)
 x1.forward()
