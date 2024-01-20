@@ -18,41 +18,37 @@ $ python table2.py
 Create Node:
         value:2              
         parents:[]                            
-        operator:None                                              
+        operator:'input'                                           
 Create Node:
         value:5              
         parents:[]                            
-        operator:None                                              
-Create Node:
-        value:2.718          
-        parents:[]                            
-        operator:None                                              
+        operator:'input'                                           
 Create Node:
         value:0.693          
-        parents:[2, 2.718]                    
-        operator:<built-in function log>                           
+        parents:[2]                           
+        operator:'log'                                             
 Create Node:
         value:10             
         parents:[2, 5]                        
-        operator:<slot wrapper '__mul__' of 'float' objects>       
+        operator:'mul'                                             
 Create Node:
         value:10.693         
         parents:[0.693, 10]                   
-        operator:<slot wrapper '__add__' of 'float' objects>       
+        operator:'add'                                             
 Create Node:
         value:-0.959         
         parents:[5]                           
-        operator:<built-in function sin>                           
+        operator:'sin'                                             
 Create Node:
         value:11.652         
         parents:[10.693, -0.959]              
-        operator:<slot wrapper '__sub__' of 'float' objects>       
+        operator:'sub'                                             
 Forward Tangent Trace:
 value:2              |parents:[]                            |gradient:1                             
 value:10             |parents:[2, 5]                        |gradient:5                             
-value:0.693          |parents:[2, 2.718]                    |gradient:0.5                           
+value:0.693          |parents:[2]                           |gradient:0.5                           
 value:10.693         |parents:[0.693, 10]                   |gradient:5.5                           
-value:11.652         |parents:[10.693, -0.959]              |gradient:5.5
+value:11.652         |parents:[10.693, -0.959]              |gradient:5.5    
 ```
 In Table 3, as in Table 2, it first evaluates function value.
 Then, the reverse-mode automatic differentiation from $y$ is conducted.
@@ -61,44 +57,39 @@ $ python table3.py
 Create Node:
         value:2              
         parents:[]                            
-        operator:None                                              
+        operator:'input'                                           
 Create Node:
         value:5              
         parents:[]                            
-        operator:None                                              
-Create Node:
-        value:2.718          
-        parents:[]                            
-        operator:None                                              
+        operator:'input'                                           
 Create Node:
         value:0.693          
-        parents:[2, 2.718]                    
-        operator:<built-in function log>                           
+        parents:[2]                           
+        operator:'log'                                             
 Create Node:
         value:10             
         parents:[2, 5]                        
-        operator:<slot wrapper '__mul__' of 'float' objects>       
+        operator:'mul'                                             
 Create Node:
         value:10.693         
         parents:[0.693, 10]                   
-        operator:<slot wrapper '__add__' of 'float' objects>       
+        operator:'add'                                             
 Create Node:
         value:-0.959         
         parents:[5]                           
-        operator:<built-in function sin>                           
+        operator:'sin'                                             
 Create Node:
         value:11.652         
         parents:[10.693, -0.959]              
-        operator:<slot wrapper '__sub__' of 'float' objects>       
+        operator:'sub'                                             
 Reverse Adjoint Trace:
 value:11.652         |parents:[10.693, -0.959]              |gradient:1                             
 value:-0.959         |parents:[5]                           |gradient:-1                            
 value:10.693         |parents:[0.693, 10]                   |gradient:1                             
 value:10             |parents:[2, 5]                        |gradient:1                             
 value:5              |parents:[]                            |gradient:1.716                         
-value:0.693          |parents:[2, 2.718]                    |gradient:1                             
-value:2.718          |parents:[]                            |gradient:-0.127                        
-value:2              |parents:[]                            |gradient:5.5   
+value:0.693          |parents:[2]                           |gradient:1                             
+value:2              |parents:[]                            |gradient:5.5 
 ```
 Everyone can refer to our materials for plain illustrations of the implementation.
 
