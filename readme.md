@@ -1,8 +1,8 @@
 # Simple AutoDiff
 This repository demonstrates a simple autograd-like implementation of automatic differentiation.
 
-## Project main page
-Please refer to our [main page]() for the document and slides.
+## Project page
+Please refer to our [page]() for the document and slides.
 
 ## An Example
 We have our example referred to in Table 2 in [Automatic Differentiation in Machine Learning: A Survey (Baydin et al., 2018)](https://www.jmlr.org/papers/volume18/17-468/17-468.pdf).
