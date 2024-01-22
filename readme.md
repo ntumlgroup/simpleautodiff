@@ -24,5 +24,5 @@ print(y.value)
 forward(x1)
 print(y.grad)
 ```
-It first performs the forward mode to evaluate the value of $y$ at $(x_1=2,x_2=5)$.
+It first creates the computational graph and evaluate the value of $y$ at $(x_1=2,x_2=5)$ at the same time.
 Then, based on the function value $y=11.652$, the forward-mode automatic differentiation from $x_1=2$ is performed.
