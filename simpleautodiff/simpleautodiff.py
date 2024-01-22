@@ -121,7 +121,7 @@ def reverse_topological_order(rootNode):
             ordering.append(node)
     ordering, visited = [], set()
     add_parents(rootNode)
-    return reversed(orderin)
+    return reversed(ordering)
 
 def backward(rootNode):
     if rootNode.verbose:
