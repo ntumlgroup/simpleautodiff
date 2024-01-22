@@ -68,7 +68,7 @@ def mul(node1, node2):
 def log(node):
     value = math_log(node.value)
     parent_nodes = [node]
-    grad_wrt_parents = [1/(node.value*math_log(math_exp(1)))]
+    grad_wrt_parents = [1/(node.value)]
     newNode = Node(value, parent_nodes, "log", grad_wrt_parents)
     node.child_nodes.append(newNode)
     return newNode
