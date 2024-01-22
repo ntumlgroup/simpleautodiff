@@ -12,10 +12,15 @@ from simpleautodiff import Node
 from simpleautodiff import add, sub, mul, log, sin
 from simpleautodiff import forward
 
+# create root nodes
 x1 = Node(2)
 x2 = Node(5)
+
+# create computational graph and evaluate function value
 y = sub(add(log(x1), mul(x1, x2)), sin(x2))
 print(y.value)
+
+# perform forward-mode autodiff
 forward(x1)
 print(y.grad)
 ```
