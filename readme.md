@@ -1,11 +1,10 @@
-# Simple Bidirectional Autograd
-This repository demonstrates a simple autograd-like implementation of bidirectional automatic differentiation.
-As the autograd, we use the function wrappers for generating the computation graph.
-Also, the tape is used in both the forward mode and the reverse mode.
+# Simple AutoDiff
+This repository demonstrates a simple autograd-like implementation of automatic differentiation.
 
-We started this project for people who know about automatic differentiation and want to learn how to implement it.
-Besides codes, we share tutorial slides and documents.
-## Run the examples:
+## Project main page
+Please refer to our [main page]() for the document and slides.
+
+## Run the examples
 Here, we have two examples taken from Table 2 and Table 3 in [Automatic Differentiation in Machine Learning: a Survey (Baydin et al., (2018))](https://www.jmlr.org/papers/volume18/17-468/17-468.pdf).
 In these two examples, the equation $y=\log(x_1)+x_1x_2+\sin(x_2)$ with $(x_1,x_2)=(2,5)$ is used.
 
@@ -91,24 +90,3 @@ value:5              |parents:[]                            |gradient:1.716
 value:0.693          |parents:[2]                           |gradient:1                             
 value:2              |parents:[]                            |gradient:5.5 
 ```
-Everyone can refer to our materials for plain illustrations of the implementation.
-
-## Download and Environments:
-
-## Document and Slides
-For those who are interested in learning how to implement, we provide document and slides at [].
-These materials introduce basic concepts and focus on implementation.
-
-## Lectures:
-The video of lecture can be found at [].
-We use these materials in the course `Optimization Methods for Deep Learning`.
-
-## Reference:
-Papers:
-* [Modeling, Inference and Optimization with Composable Differentiable Procedures (Maclaurin, 2016)](https://www.semanticscholar.org/paper/Modeling%2C-Inference-and-Optimization-With-Maclaurin/d5c6ee4468116671dcd811c1518c1dbf54c99e77)
-* [Automatic Differentiation in Machine Learning: a Survey (Baydin et al., (2018))](https://www.jmlr.org/papers/volume18/17-468/17-468.pdf)
-
-Repositories:
-* [HIPS/autograd](https://github.com/HIPS/autograd)
-* [karpathy/micrograd](https://github.com/karpathy/micrograd)
-* [pytorch/pytorch](https://github.com/pytorch/pytorch)
