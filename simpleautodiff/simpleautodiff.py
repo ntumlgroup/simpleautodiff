@@ -108,8 +108,8 @@ def forward(rootNode):
             node.partial_derivative = partial_derivative
             symbol_process += " + (d" + node.name + "/d" + node.parent_nodes[i].name + ")"\
                               + "(d" + node.parent_nodes[i].name + "/d" + rootNode.name + ")"
-            value_process += " + (" + str(dnode_dparent) + ")(" + \
-                str(node.parent_nodes[i].partial_derivative) + ")"
+            value_process += " + (" + str(dnode_dparent.__round__(3)) + ")(" + \
+                str(node.parent_nodes[i].partial_derivative.__round__(3)) + ")"
         if Node.verbose == True:
             print('d{:<2}/d{:<2} = {:<45} \n\t= {:<30} = {:<5}'.format(
                 node.name,
