@@ -6,7 +6,7 @@ Please refer to our [page]() for the document and slides.
 
 ## An Example
 The following example generates Table 2 in [Automatic Differentiation in Machine Learning: A Survey (Baydin et al., 2018)](https://www.jmlr.org/papers/volume18/17-468/17-468.pdf), which calculates the partial derivative with respect to the first variable $x_1$.
-We consider $y=\log(x_1)+x_1x_2+\sin(x_2)$ with $(x_1,x_2)=(2,5)$.
+We consider $y=\log(x_1)+x_1x_2-\sin(x_2)$ with $(x_1,x_2)=(2,5)$.
 ```python
 from simpleautodiff import *
 
