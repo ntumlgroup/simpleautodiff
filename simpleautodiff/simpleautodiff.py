@@ -1,5 +1,4 @@
 from math import log as math_log
-from math import exp as math_exp
 from math import sin as math_sin
 from math import cos as math_cos
 
