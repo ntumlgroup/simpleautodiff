@@ -7,10 +7,10 @@ class Node:
     def __init__(self, value, parent_nodes=[], operator='input',grad_wrt_parents=[]):
         self.value = value
         self.parent_nodes = parent_nodes
+        self.child_nodes = []
         self.operator = operator
         self.grad_wrt_parents = grad_wrt_parents
-        self.child_nodes = []
-        self.grad = 0
+        self.partial_derivative = 0
 
 def add(node1, node2):
     value = node1.value + node2.value
@@ -67,12 +67,12 @@ def topological_order(rootNode):
     return reversed(ordering)
 
 def forward(rootNode):
-    rootNode.grad = 1
+    rootNode.partial_derivative = 1
     ordering = topological_order(rootNode)
     for node in ordering:
         partial_derivative = 0
         for i in range(len(node.parent_nodes)):
             dnode_dparent = node.grad_wrt_parents[i]
-            dparent_droot = node.parent_nodes[i].grad
+            dparent_droot = node.parent_nodes[i].partial_derivative
             partial_derivative += dnode_dparent * dparent_droot
-            node.grad = partial_derivative
+            node.partial_derivative = partial_derivative

@@ -1,16 +1,14 @@
 # Simple AutoDiff
-This repository demonstrates a simple autograd-like implementation of automatic differentiation.
+This repository demonstrates a simple implementation of automatic differentiation.
 
-## Project page
+## Project Page
 Please refer to our [page]() for the document and slides.
 
 ## An Example
-We have our example referred to in Table 2 in [Automatic Differentiation in Machine Learning: A Survey (Baydin et al., 2018)](https://www.jmlr.org/papers/volume18/17-468/17-468.pdf).
-Here, the equation $y=\log(x_1)+x_1x_2+\sin(x_2)$ with $(x_1,x_2)=(2,5)$ is used.
+The following example generates Table 2 in [Automatic Differentiation in Machine Learning: A Survey (Baydin et al., 2018)](https://www.jmlr.org/papers/volume18/17-468/17-468.pdf), which calculates the partial derivative with respect to the first variable $x_1$.
+We consider $y=\log(x_1)+x_1x_2+\sin(x_2)$ with $(x_1,x_2)=(2,5)$.
 ```python
-from simpleautodiff import Node
-from simpleautodiff import add, sub, mul, log, sin
-from simpleautodiff import forward
+from simpleautodiff import Node, add, sub, mul, log, sin, forward
 
 # create root nodes
 x1 = Node(2)
@@ -22,7 +20,7 @@ print(y.value)
 
 # perform forward-mode autodiff
 forward(x1)
-print(y.grad)
+print(y.partial_derivative)
 ```
 It first creates the computational graph and evaluate the value of $y$ at $(x_1=2,x_2=5)$ at the same time.
-Then, based on the function value $y=11.652$, the forward-mode automatic differentiation from $x_1=2$ is performed.
+Then, the forward-mode automatic differentiation at $x_1=2$ is performed.
