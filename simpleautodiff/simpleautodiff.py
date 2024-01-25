@@ -97,21 +97,18 @@ def forward(rootNode):
     ordering = topological_order(rootNode)
     for node in ordering:
         partial_derivative = 0
-        process = ["",""]
         for i in range(len(node.parent_nodes)):
             dnode_dparent = node.grad_wrt_parents[i]
             dparent_droot = node.parent_nodes[i].partial_derivative
             partial_derivative += dnode_dparent * dparent_droot
             node.partial_derivative = partial_derivative
-            process[0]+="(d" + node.name + "/d" + node.parent_nodes[i].name + ")"\
-                              + "(d" + node.parent_nodes[i].name + "/d" + rootNode.name + ") + "
-            process[1]+="(" + str(dnode_dparent.__round__(3)) + ")(" + \
-                    str(node.parent_nodes[i].partial_derivative.__round__(3)) + ") + "
-        if Node.verbose == True:
-            print('d{:<2}/d{:<2} = {:<45} \n\t= {:<30} = {:<5}'.format(
-                node.name,
-                rootNode.name,
-                process[0].strip(" + "), # Remove the tailing " + "
-                process[1].strip(" + "), # Remove the tailing " + "
-                str(node.partial_derivative.__round__(3)))
-            )
+            if Node.verbose == True:
+                print('d{:<2}/d{:<2} += {:<20} \n\t+= {:<20} = {:<5}'.format(
+                    node.name,
+                    rootNode.name,
+                    "(d" + node.name + "/d" + node.parent_nodes[i].name + ")"\
+                              + "(d" + node.parent_nodes[i].name + "/d" + rootNode.name+")",
+                    "(" + str(dnode_dparent.__round__(3)) + ")(" + \
+                    str(node.parent_nodes[i].partial_derivative.__round__(3))+")",
+                    str(node.partial_derivative.__round__(3)))
+                )
