@@ -33,14 +33,18 @@ v5 =   sub['v3', 'v4'] = 11.652
 ```
 Then, the code performs forward-mode automatic differentiation at $x_1=2$.
 ```
-dx1/dx1 =                                               
-        =                                = 1    
-dv2/dx1 = (dv2/dx1)(dx1/dx1) + (dv2/dx2)(dx2/dx1)       
-        = (5)(1) + (2)(0)                = 5    
-dv1/dx1 = (dv1/dx1)(dx1/dx1)                            
-        = (0.5)(1)                       = 0.5  
-dv3/dx1 = (dv3/dv1)(dv1/dx1) + (dv3/dv2)(dv2/dx1)       
-        = (1)(0.5) + (1)(5)              = 5.5  
-dv5/dx1 = (dv5/dv3)(dv3/dx1) + (dv5/dv4)(dv4/dx1)       
-        = (1)(5.5) + (-1)(0)             = 5.5 
+dv2/dx1 += (dv2/dx1)(dx1/dx1)   
+        += (5)(1)               = 5    
+dv2/dx1 += (dv2/dx2)(dx2/dx1)   
+        += (2)(0)               = 5    
+dv1/dx1 += (dv1/dx1)(dx1/dx1)   
+        += (0.5)(1)             = 0.5  
+dv3/dx1 += (dv3/dv1)(dv1/dx1)   
+        += (1)(0.5)             = 0.5  
+dv3/dx1 += (dv3/dv2)(dv2/dx1)   
+        += (1)(5)               = 5.5  
+dv5/dx1 += (dv5/dv3)(dv3/dx1)   
+        += (1)(5.5)             = 5.5  
+dv5/dx1 += (dv5/dv4)(dv4/dx1)   
+        += (-1)(0)              = 5.5   
 ```
