@@ -93,28 +93,25 @@ def topological_order(rootNode):
 
 
 def forward(rootNode):
-    if Node.verbose == True:
-        print("Forward Mode:")
     rootNode.partial_derivative = 1
     ordering = topological_order(rootNode)
     for node in ordering:
         partial_derivative = 0
-        symbol_process = ""
-        value_process = ""
+        process = ["",""]
         for i in range(len(node.parent_nodes)):
             dnode_dparent = node.grad_wrt_parents[i]
             dparent_droot = node.parent_nodes[i].partial_derivative
             partial_derivative += dnode_dparent * dparent_droot
             node.partial_derivative = partial_derivative
-            symbol_process += " + (d" + node.name + "/d" + node.parent_nodes[i].name + ")"\
-                              + "(d" + node.parent_nodes[i].name + "/d" + rootNode.name + ")"
-            value_process += " + (" + str(dnode_dparent.__round__(3)) + ")(" + \
-                str(node.parent_nodes[i].partial_derivative.__round__(3)) + ")"
+            process[0]+="(d" + node.name + "/d" + node.parent_nodes[i].name + ")"\
+                              + "(d" + node.parent_nodes[i].name + "/d" + rootNode.name + ") + "
+            process[1]+="(" + str(dnode_dparent.__round__(3)) + ")(" + \
+                    str(node.parent_nodes[i].partial_derivative.__round__(3)) + ") + "
         if Node.verbose == True:
             print('d{:<2}/d{:<2} = {:<45} \n\t= {:<30} = {:<5}'.format(
                 node.name,
                 rootNode.name,
-                symbol_process,
-                value_process,
+                process[0].strip(" + "), # Remove the tailing " + "
+                process[1].strip(" + "), # Remove the tailing " + "
                 str(node.partial_derivative.__round__(3)))
             )
