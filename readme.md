@@ -23,28 +23,24 @@ forward(x1)
 ```
 It first creates the computational graph and evaluates the value of $y$ at $(x_1=2,x_2=5)$ simultaneously.
 ```
-x1 = input[]           = 2       
-x2 = input[]           = 5       
-v1 =   log['x1']       = 0.693   
-v2 =   mul['x1', 'x2'] = 10      
-v3 =   add['v1', 'v2'] = 10.693  
-v4 =   sin['x2']       = -0.959  
-v5 =   sub['v3', 'v4'] = 11.652 
+x1 = input[]            = 2       
+x2 = input[]            = 5       
+v1 = log['x1']          = 0.693   
+v2 = mul['x1', 'x2']    = 10      
+v3 = add['v1', 'v2']    = 10.693  
+v4 = sin['x2']          = -0.959  
+v5 = sub['v3', 'v4']    = 11.652  
 ```
 Then, the code performs forward-mode automatic differentiation at $x_1=2$.
 ```
-dv2/dx1 += (dv2/dx1)(dx1/dx1)   
-        += (5)(1)               = 5    
-dv2/dx1 += (dv2/dx2)(dx2/dx1)   
-        += (2)(0)               = 5    
-dv1/dx1 += (dv1/dx1)(dx1/dx1)   
-        += (0.5)(1)             = 0.5  
-dv3/dx1 += (dv3/dv1)(dv1/dx1)   
-        += (1)(0.5)             = 0.5  
-dv3/dx1 += (dv3/dv2)(dv2/dx1)   
-        += (1)(5)               = 5.5  
-dv5/dx1 += (dv5/dv3)(dv3/dx1)   
-        += (1)(5.5)             = 5.5  
-dv5/dx1 += (dv5/dv4)(dv4/dx1)   
-        += (-1)(0)              = 5.5   
+dx1/dx1 =                                               
+        =                                = 1    
+dv2/dx1 = (dv2/dx1)(dx1/dx1) + (dv2/dx2)(dx2/dx1)       
+        = (2)(1) + (2)(0)                = 5    
+dv1/dx1 = (dv1/dx1)(dx1/dx1)                            
+        = (0.5)(1)                       = 0.5  
+dv3/dx1 = (dv3/dv1)(dv1/dx1) + (dv3/dv2)(dv2/dx1)       
+        = (1)(0.5) + (1)(5)              = 5.5  
+dv5/dx1 = (dv5/dv3)(dv3/dx1) + (dv5/dv4)(dv4/dx1)       
+        = (-1)(5.5) + (-1)(0)            = 5.5  
 ```

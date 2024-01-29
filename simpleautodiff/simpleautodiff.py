@@ -24,10 +24,9 @@ class Node:
             self.name = "v%d" % (Node.intermediate_count)
 
         if Node.verbose == True:
-            print("{:<2} = {:>5}{:<12} = {:<8}".format(
+            print("{:<2} = {:<18} = {:<8}".format(
                 self.name,
-                self.operator,
-                str([p.name for p in self.parent_nodes]),
+                self.operator+str([p.name for p in self.parent_nodes]),
                 self.value.__round__(3))
             )
 
@@ -102,13 +101,19 @@ def forward(rootNode):
             dparent_droot = node.parent_nodes[i].partial_derivative
             partial_derivative += dnode_dparent * dparent_droot
             node.partial_derivative = partial_derivative
-            if Node.verbose == True:
-                print('d{:<2}/d{:<2} += {:<20} \n\t+= {:<20} = {:<5}'.format(
-                    node.name,
-                    rootNode.name,
-                    "(d" + node.name + "/d" + node.parent_nodes[i].name + ")"\
-                              + "(d" + node.parent_nodes[i].name + "/d" + rootNode.name+")",
-                    "(" + str(dnode_dparent.__round__(3)) + ")(" + \
-                    str(node.parent_nodes[i].partial_derivative.__round__(3))+")",
-                    str(node.partial_derivative.__round__(3)))
-                )
+
+        if Node.verbose == True:
+            symbol_process = ""
+            value_process = ""
+            for i in range(len(node.parent_nodes)):
+                symbol_process += "(d" + node.name + "/d" + node.parent_nodes[i].name + ")"\
+                                  + "(d" + node.parent_nodes[i].name + "/d" + rootNode.name + ") + "
+                value_process += "(" + str(dnode_dparent.__round__(3)) + ")(" + \
+                    str(node.parent_nodes[i].partial_derivative.__round__(3)) + ") + "
+            print('d{:<2}/d{:<2} = {:<45} \n\t= {:<30} = {:<5}'.format(
+                node.name,
+                rootNode.name,
+                symbol_process.strip(" + "),
+                value_process.strip(" + "),
+                str(node.partial_derivative.__round__(3)))
+            )
