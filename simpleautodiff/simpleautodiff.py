@@ -8,15 +8,15 @@ class Node:
     input_count = 0
     intermediate_count = 0
 
-    def __init__(self, value, parent_nodes=[], operator="input", grad_wrt_parents=[]):
+    def __init__(self, value,parent_nodes=[],operator="input",):
         self.value = value
         self.parent_nodes = parent_nodes
         self.child_nodes = []
         self.operator = operator
-        self.grad_wrt_parents = grad_wrt_parents
+        self.grad_wrt_parents = []
         self.partial_derivative = 0
 
-        if operator == "input":
+        if self.operator == "input":
             Node.input_count += 1
             self.name = "x%d" % (Node.input_count)
         else:
@@ -34,8 +34,8 @@ class Node:
 def add(node1, node2):
     value = node1.value + node2.value
     parent_nodes = [node1, node2]
-    grad_wrt_parents = [1, 1]
-    newNode = Node(value, parent_nodes, "add", grad_wrt_parents)
+    newNode = Node(value,parent_nodes,"add")
+    newNode.grad_wrt_parents = [1, 1]
     node1.child_nodes.append(newNode)
     node2.child_nodes.append(newNode)
     return newNode
@@ -44,8 +44,8 @@ def add(node1, node2):
 def sub(node1, node2):
     value = node1.value - node2.value
     parent_nodes = [node1, node2]
-    grad_wrt_parents = [1, -1]
-    newNode = Node(value, parent_nodes, "sub", grad_wrt_parents)
+    newNode = Node(value,parent_nodes,"sub")
+    newNode.grad_wrt_parents = [1, -1]
     node1.child_nodes.append(newNode)
     node2.child_nodes.append(newNode)
     return newNode
@@ -54,8 +54,8 @@ def sub(node1, node2):
 def mul(node1, node2):
     value = node1.value * node2.value
     parent_nodes = [node1, node2]
-    grad_wrt_parents = [node2.value, node1.value]
-    newNode = Node(value, parent_nodes, "mul", grad_wrt_parents)
+    newNode = Node(value,parent_nodes,"mul")
+    newNode.grad_wrt_parents = [node2.value, node1.value]
     node1.child_nodes.append(newNode)
     node2.child_nodes.append(newNode)
     return newNode
@@ -64,8 +64,8 @@ def mul(node1, node2):
 def log(node):
     value = math_log(node.value)
     parent_nodes = [node]
-    grad_wrt_parents = [1/(node.value)]
-    newNode = Node(value, parent_nodes, "log", grad_wrt_parents)
+    newNode = Node(value,parent_nodes,"log")
+    newNode.grad_wrt_parents = [1/(node.value)]
     node.child_nodes.append(newNode)
     return newNode
 
@@ -73,8 +73,8 @@ def log(node):
 def sin(node):
     value = math_sin(node.value)
     parent_nodes = [node]
-    grad_wrt_parents = [math_cos(node.value)]
-    newNode = Node(value, parent_nodes, "sin", grad_wrt_parents)
+    newNode = Node(value,parent_nodes,"sin")
+    newNode.grad_wrt_parents = [math_cos(node.value)]
     node.child_nodes.append(newNode)
     return newNode
 
