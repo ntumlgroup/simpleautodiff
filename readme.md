@@ -1,4 +1,4 @@
-# Simple AutoDiff
+# Simple Automatic Differentiation
 This repository demonstrates a simple implementation of automatic differentiation.
 
 ## Project Page
