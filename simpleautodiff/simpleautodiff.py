@@ -88,19 +88,19 @@ def topological_order(rootNode):
             ordering.append(node)
     ordering, visited = [], set()
     add_children(rootNode)
-    return reversed(ordering)
+    return list(reversed(ordering))
 
 
 def forward(rootNode):
     rootNode.partial_derivative = 1
     ordering = topological_order(rootNode)
-    for node in ordering:
+    for node in ordering[1:]:
         partial_derivative = 0
         for i in range(len(node.parent_nodes)):
             dnode_dparent = node.grad_wrt_parents[i]
             dparent_droot = node.parent_nodes[i].partial_derivative
             partial_derivative += dnode_dparent * dparent_droot
-            node.partial_derivative = partial_derivative
+        node.partial_derivative = partial_derivative
 
         if Node.verbose == True:
             symbol_process = ""
