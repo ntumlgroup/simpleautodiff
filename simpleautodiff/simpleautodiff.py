@@ -106,6 +106,7 @@ def forward(rootNode):
             symbol_process = ""
             value_process = ""
             for i in range(len(node.parent_nodes)):
+                dnode_dparent = node.grad_wrt_parents[i]
                 symbol_process += "(d" + node.name + "/d" + node.parent_nodes[i].name + ")"\
                                   + "(d" + node.parent_nodes[i].name + "/d" + rootNode.name + ") + "
                 value_process += "(" + str(dnode_dparent.__round__(3)) + ")(" + \
