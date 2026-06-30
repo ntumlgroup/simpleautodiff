@@ -92,6 +92,17 @@ def topological_order(rootNode):
 
 
 def forward(rootNode):
+    # traverse the full graph in both directions to reset stale gradients
+    all_nodes, stack = set(), [rootNode]
+    while stack:
+        node = stack.pop()
+        if node not in all_nodes:
+            all_nodes.add(node)
+            stack.extend(node.parent_nodes)
+            stack.extend(node.child_nodes)
+    for node in all_nodes:
+        node.partial_derivative = 0
+
     rootNode.partial_derivative = 1
     ordering = topological_order(rootNode)
     for node in ordering[1:]:
@@ -119,3 +130,38 @@ def forward(rootNode):
                 value_process.strip(" + "),
                 str(node.partial_derivative.__round__(3)))
             )
+
+def reverse_topological_order(outputNode):
+    def add_parents(node):
+        if node not in visited:
+            visited.add(node)
+            for parent in node.parent_nodes:
+                add_parents(parent)
+            ordering.append(node)
+    ordering, visited = [], set()
+    add_parents(outputNode)
+    return list(reversed(ordering))
+
+
+def backward(outputNode):
+    ordering = reverse_topological_order(outputNode)
+    for node in ordering:
+        node.partial_derivative = 0
+    outputNode.partial_derivative = 1
+    for node in ordering:
+        for i, parent in enumerate(node.parent_nodes):
+            dnode_dparent = node.grad_wrt_parents[i]
+            parent.partial_derivative += dnode_dparent * node.partial_derivative
+
+        if Node.verbose:
+            for i, parent in enumerate(node.parent_nodes):
+                dnode_dparent = node.grad_wrt_parents[i]
+                print('d{:<2}/d{:<2} += (d{}/d{})*(d{}/d{}) = ({})({}) = {:<5}'.format(
+                    outputNode.name, parent.name,
+                    outputNode.name, node.name,
+                    node.name, parent.name,
+                    str(node.partial_derivative.__round__(3)),
+                    str(dnode_dparent.__round__(3)),
+                    str(parent.partial_derivative.__round__(3)))
+                )
+
